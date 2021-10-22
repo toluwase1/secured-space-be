@@ -1,0 +1,4 @@
+mock_*
+.env
+.vscode
+.idea

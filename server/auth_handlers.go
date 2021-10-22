@@ -67,22 +67,14 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		log.Printf("%v\n%s\n", user.Password, string(user.Password))
-		err = bcrypt.CompareHashAndPassword(user.Password, []byte(loginRequest.Password))
+		err = services.CompareHashAndPassword(user.Password, loginRequest.Password)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"username or password incorrect"})
 			return
 		}
 
-		accessClaims := jwt.MapClaims{
-			"user_email": user.Email,
-			"exp":        time.Now().Add(services.AccessTokenValidity).Unix(),
-		}
-		refreshClaims := jwt.MapClaims{
-			"exp": time.Now().Add(services.RefreshTokenValidity).Unix(),
-			"sub": 1,
-		}
+		accessClaims, refreshClaims := services.GenerateClaims(user.Email)
 
 		secret := os.Getenv("JWT_SECRET")
 		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)

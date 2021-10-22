@@ -8,7 +8,6 @@ import (
 	"github.com/decadevs/rentals-api/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +23,7 @@ func (s *Server) handleSignup() gin.HandlerFunc {
 			return
 		}
 		var err error
-		user.Password, err = bcrypt.GenerateFromPassword([]byte(user.PasswordString), bcrypt.DefaultCost)
+		user.Password, err = services.GenerateHashPassword([]byte(user.PasswordString))
 		if err != nil {
 			log.Printf("hash password err: %v\n", err)
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
@@ -74,6 +73,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			return
 		}
 
+		// Generates access claims and refresh claims
 		accessClaims, refreshClaims := services.GenerateClaims(user.Email)
 
 		secret := os.Getenv("JWT_SECRET")

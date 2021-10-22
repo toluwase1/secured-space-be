@@ -62,6 +62,10 @@ func CompareHashAndPassword(password []byte, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword(password, []byte(hashedPassword))
 }
 
+func GenerateHashPassword(password []byte) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+}
+
 func GenerateClaims(email string) (jwt.MapClaims, jwt.MapClaims) {
 	accessClaims := jwt.MapClaims{
 		"user_email": email,
@@ -74,3 +78,4 @@ func GenerateClaims(email string) (jwt.MapClaims, jwt.MapClaims) {
 
 	return accessClaims, refreshClaims
 }
+

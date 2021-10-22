@@ -1,18 +1,14 @@
 package server
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/decadevs/rentals-api/servererrors"
+	"github.com/decadevs/rentals-api/services"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -144,27 +140,15 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 				}
 				defer file.Close()
 
-				supportedFileTypes := map[string]bool{
-					".png":  true,
-					".jpeg": true,
-					".jpg":  true,
-				}
-				fileExtension := filepath.Ext(fileHeader.Filename)
-				if !supportedFileTypes[fileExtension] {
+				fileExtension, ok := services.CheckSupportedFile(fileHeader.Filename)
+				if !ok {
 					log.Println(fileExtension)
 					response.JSON(c, "", http.StatusBadRequest, nil, []string{fileExtension + " image file type is not supported"})
 					return
 				}
-				tempFileName := "profile_pics/" + bson.NewObjectId().Hex() + fileExtension
 
-				session, err := session.NewSession(&aws.Config{
-					Region: aws.String(os.Getenv("AWS_REGION")),
-					Credentials: credentials.NewStaticCredentials(
-						os.Getenv("AWS_SECRET_ID"),
-						os.Getenv("AWS_SECRET_KEY"),
-						os.Getenv("AWS_TOKEN"),
-					),
-				})
+				session, tempFileName, err := services.SaveFile(fileExtension)
+
 				if err != nil {
 					log.Printf("could not upload file: %v\n", err)
 				}

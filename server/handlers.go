@@ -1,7 +1,8 @@
-package server
+package handlers
 
 import (
 	"bytes"
+	"github.com/decadevs/rentals-api/server"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -13,18 +14,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/decadevs/rentals-api/servererrors"
 	"github.com/decadevs/rentals-api/services"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"github.com/globalsign/mgo/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Server) handleSignup() gin.HandlerFunc {
+func (s *server.Server) handleSignup() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{Status: "active"}
 
@@ -53,7 +54,7 @@ func (s *Server) handleSignup() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) handleLogin() gin.HandlerFunc {
+func (s *server.Server) handleLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{}
 		loginRequest := &struct {
@@ -116,7 +117,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) handleLogout() gin.HandlerFunc {
+func (s *server.Server) handleLogout() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if tokenI, exists := c.Get("access_token"); exists {
@@ -172,7 +173,7 @@ func (s *Server) handleLogout() gin.HandlerFunc {
 }
 
 // handleShowProfile returns user's details
-func (s *Server) handleShowProfile() gin.HandlerFunc {
+func (s *server.Server) handleShowProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
@@ -192,7 +193,7 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) handleUpdateUserDetails() gin.HandlerFunc {
+func (s *server.Server) handleUpdateUserDetails() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
@@ -220,7 +221,7 @@ func (s *Server) handleUpdateUserDetails() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) handleGetUsers() gin.HandlerFunc {
+func (s *server.Server) handleGetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// get users should only be access by those have the permission
 		if userI, exists := c.Get("user"); exists {
@@ -241,7 +242,7 @@ func (s *Server) handleGetUsers() gin.HandlerFunc {
 	}
 }
 
-func (s *Server) handleGetUserByUsername() gin.HandlerFunc {
+func (s *server.Server) handleGetUserByUsername() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := &struct {
 			Username string `json:"username" binding:"required"`
@@ -275,7 +276,7 @@ func (s *Server) handleGetUserByUsername() gin.HandlerFunc {
 }
 
 // handleUploadProfilePic uploads a user's profile picture
-func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
+func (s *server.Server) handleUploadProfilePic() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if userI, exists := c.Get("user"); exists {

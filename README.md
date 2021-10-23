@@ -43,6 +43,7 @@ Thanks to the following people who have contributed to this project:
 * Chisom Amadi ([Tchisom17](https://github.com/Tchisom17)) 🐛
 * Nonso Okike ([okikechinonso](https://github.com/okikechinonso)) 🐛
 * Shuaib Olurode ([OShuaib](https://github.com/OShuaib)) 🐛
+* Chukwuebuka Iroegbu ([iBoBoTi](https://github.com/iBoBoTi)) 🐛
 
 
 ## License

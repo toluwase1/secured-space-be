@@ -22,10 +22,10 @@ make run
 <!--- If your README is long or you have some specific process or steps you want contributors to follow, consider creating a separate CONTRIBUTING.md file--->
 To contribute to Rentals-API, follow these steps:
 
-1. Fork this repository.
+1. Clone this repository.
 2. Create a branch: `git checkout -b <branch_name>`.
 3. Make your changes and commit them: `git commit -m '<commit_message>'`
-4. Push to the original branch: `git push origin <project_name>/<location>`
+4. Push to the original branch: `git push origin <branch_name>/<location>`
 5. Create the pull request.
 
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
@@ -35,6 +35,8 @@ Alternatively see the GitHub documentation on [creating a pull request](https://
 Thanks to the following people who have contributed to this project:
 
 * Odohi David ([spankie](https://github.com/spankie)) 📖
+* Toluwase Thomas ([toluwase1](https://github.com/toluwase1)) 📖
+* Olusola Alao ([olusolaa](https://github.com/olusolaa)) 📖
 * Tambarie Gbaragbo ([Tambarie](https://github.com/Tambarie)) 🐛
 * Clinton Adebayo ([Ad3bay0c](https://github.com/Ad3bay0c)) 🐛
 * Omoyemi Arigbanla ([yemmyharry](https://github.com/yemmyharry)) 🐛
@@ -44,10 +46,7 @@ Thanks to the following people who have contributed to this project:
 * Nonso Okike ([okikechinonso](https://github.com/okikechinonso)) 🐛
 * Shuaib Olurode ([OShuaib](https://github.com/OShuaib)) 🐛
 * Chukwuebuka Iroegbu ([iBoBoTi](https://github.com/iBoBoTi)) 🐛
+* Nnah Nnamdi ([techagentng](https://github.com/techagentng)) 🐛
 
 
-## License
-<!--- If you're not sure which open license to use see https://choosealicense.com/--->
-
-This project uses the following license: [ODOGWU SENDER](<link>).
 

@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 
-	"github.com/spankie/go-auth/models"
+	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -1,4 +1,4 @@
-module github.com/spankie/go-auth
+module github.com/decadevs/rentals-api
 
 go 1.14
 

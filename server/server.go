@@ -12,9 +12,9 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/spankie/go-auth/db"
-	"github.com/spankie/go-auth/router"
-	"github.com/spankie/go-auth/server/middleware"
+	"github.com/decadevs/rentals-api/db"
+	"github.com/decadevs/rentals-api/router"
+	"github.com/decadevs/rentals-api/server/middleware"
 )
 
 // Server serves requests to DB with router

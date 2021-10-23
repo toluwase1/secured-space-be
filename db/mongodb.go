@@ -6,8 +6,8 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
-	"github.com/spankie/go-auth/models"
-	"github.com/spankie/go-auth/servererrors"
+	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/servererrors"
 )
 
 // MongoDB implements the DB interface

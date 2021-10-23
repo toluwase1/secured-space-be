@@ -15,7 +15,9 @@ run:
 	go run main.go 
 
 build:
-	docker build . -t rentals -f Dockerfile-dev
+	docker build . -t rentals -f Dockerfile
 
 up:
-	docker run -it --name=rentals-api -p 8080:8080 rentals
+	docker-compose up --build
+	
+# docker run -it --name=rentals-api -p 8080:8080 rentals

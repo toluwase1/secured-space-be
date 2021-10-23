@@ -19,7 +19,7 @@ func main() {
 	}
 
 	DB := &db.PostgresDB{}
-	// DB.Init()
+	DB.Init()
 	s := &server.Server{
 		DB:     DB,
 		Router: router.NewRouter(),

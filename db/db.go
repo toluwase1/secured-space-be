@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 
-	"github.com/spankie/go-auth/models"
+	"github.com/decadevs/rentals-api/models"
 )
 
 // DB provides access to the different db

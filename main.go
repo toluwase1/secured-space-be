@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/decadevs/rentals-api/db"
+	"github.com/decadevs/rentals-api/router"
+	"github.com/decadevs/rentals-api/server"
 	"github.com/joho/godotenv"
-	"github.com/spankie/go-auth/db"
-	"github.com/spankie/go-auth/router"
-	"github.com/spankie/go-auth/server"
 )
 
 func main() {

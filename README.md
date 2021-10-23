@@ -5,25 +5,37 @@ Rentals-API is a `RESTful-API` that allows `developers` to ` connect to data abo
 
 ## Using Rentals-API
 
-To use Rentals-API, clone this repository and then install the dependencies using:
+To use Rentals-API, clone this repository and follow one of two methods shown below:
+
+### Using Docker Compose
+
+1. [Install Docker Compose](https://docs.docker.com/compose/install/)
+2. Run all containers with `make up`.
+
+
+### Using Your Local Machine
+
+1. [Install Go](https://golang.org/doc/install)
+2. [Install PostgreSQL](https://www.postgresql.org/download/)
+3. Create a database named `rental`.
+4. Install all dependencies using:
+
 
 ```
 go mod tidy
 ```
-
-To run, use:
-
+5. Run the application using:
 
 ```
 make run
 ```
 
 ## Contributing to Rentals-API
-<!--- If your README is long or you have some specific process or steps you want contributors to follow, consider creating a separate CONTRIBUTING.md file--->
+
 To contribute to Rentals-API, follow these steps:
 
 1. Clone this repository.
-2. Create a branch: `git checkout -b <branch_name>`.
+2. Create a branch: `git checkout -b <branch_name>`. When you create a branch, it should follow the name of the task.
 3. Make your changes and commit them: `git commit -m '<commit_message>'`
 4. Push to the original branch: `git push origin <branch_name>/<location>`
 5. Create the pull request.

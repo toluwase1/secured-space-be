@@ -2,11 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"os"
 )
 
 // PostgresDB implements the DB interface

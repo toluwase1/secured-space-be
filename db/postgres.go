@@ -3,7 +3,7 @@ package db
 import (
 	"log"
 
-	"github.com/spankie/go-auth/models"
+	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,7 +15,7 @@ type PostgresDB struct {
 
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
-	dsn := "host=192.168.0.1 user=postgres password=postgres dbname=rental port=5432 sslmode=disable TimeZone=Africa/Lagos"
+	dsn := "host=db user=postgres password=postgres dbname=rental port=5432 sslmode=disable TimeZone=Africa/Lagos"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)

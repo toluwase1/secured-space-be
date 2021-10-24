@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/spankie/go-auth/db"
-	"github.com/spankie/go-auth/models"
-	"github.com/spankie/go-auth/router"
+	"github.com/decadevs/rentals-api/db"
+	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/router"
 	"github.com/stretchr/testify/assert"
 )
 

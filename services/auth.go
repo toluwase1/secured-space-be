@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -56,3 +57,25 @@ func GenerateToken(signMethod *jwt.SigningMethodHMAC, claims jwt.MapClaims, secr
 	}
 	return &tokenString, nil
 }
+
+func CompareHashAndPassword(password []byte, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword(password, []byte(hashedPassword))
+}
+
+func GenerateHashPassword(password []byte) ([]byte, error) {
+	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+}
+
+func GenerateClaims(email string) (jwt.MapClaims, jwt.MapClaims) {
+	accessClaims := jwt.MapClaims{
+		"user_email": email,
+		"exp":        time.Now().Add(AccessTokenValidity).Unix(),
+	}
+	refreshClaims := jwt.MapClaims{
+		"exp": time.Now().Add(RefreshTokenValidity).Unix(),
+		"sub": 1,
+	}
+
+	return accessClaims, refreshClaims
+}
+

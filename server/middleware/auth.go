@@ -8,10 +8,10 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/spankie/go-auth/models"
-	"github.com/spankie/go-auth/server/response"
-	"github.com/spankie/go-auth/servererrors"
-	"github.com/spankie/go-auth/services"
+	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/server/response"
+	"github.com/decadevs/rentals-api/servererrors"
+	"github.com/decadevs/rentals-api/services"
 )
 
 // Authorize authorizes a request

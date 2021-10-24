@@ -1,4 +1,4 @@
 mock_*
-.env
 .vscode
 .idea
+*.env

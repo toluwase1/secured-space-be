@@ -78,4 +78,3 @@ func GenerateClaims(email string) (jwt.MapClaims, jwt.MapClaims) {
 
 	return accessClaims, refreshClaims
 }
-

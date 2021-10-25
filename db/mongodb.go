@@ -3,11 +3,11 @@ package db
 import (
 	"time"
 
+	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/servererrors"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/pkg/errors"
-	"github.com/decadevs/rentals-api/models"
-	"github.com/decadevs/rentals-api/servererrors"
 )
 
 // MongoDB implements the DB interface

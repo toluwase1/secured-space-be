@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // User holds a user details
 type User struct {
 	Models
@@ -13,6 +15,14 @@ type User struct {
 	Password        string `json:"password" gorm:"-" binding:"required" form:"password"`
 	ConfirmPassword string `json:"confirm_password" gorm:"-" form:"confirm_password"`
 	Image           string `json:"image,omitempty"`
-	//RoleID        int      `json:"role_id"`
-	//Role 			Role
+	RoleID          int    `json:"role_id"`
+	Role            Role
+}
+type Images struct {
+	ID          string `json:"id"`
+	ApartmentID string `json:"apartment_id"`
+	URL         string
+	Name        string `json:"name"`
+	CreateAt    time.Time
+	UpdateAt    time.Time
 }

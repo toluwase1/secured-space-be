@@ -20,7 +20,7 @@ type User struct {
 }
 type Images struct {
 	ID          string `json:"id"`
-	ApartmentID string `json:"apartmeent_id"`
+	ApartmentID string `json:"apartment_id"`
 	URL         string
 	Name        string `json:"name"`
 	CreateAt    time.Time

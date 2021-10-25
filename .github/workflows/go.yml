@@ -36,7 +36,7 @@ jobs:
     - name: Test
       run: go test -v .
 
-    -uses: akhileshns/heroku-deploy@v3.12.12
+    - uses: akhileshns/heroku-deploy@v3.12.12
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
     with:
       heroku_api_key:${{secrets.HEROKU_API_KEY}}

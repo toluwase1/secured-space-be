@@ -16,7 +16,8 @@ type User struct {
 	Password        string `json:"-" gorm:"type:not null" binding:"required" form:"password"`
 	ConfirmPassword string `json:"confirm_password" form:"confirm_password"`
 	Image           string `json:"image,omitempty"`
-	//RoleID          Role      `json:"role_id" gorm:"foreignKey:RoleID"`
+	//RoleID          int      `json:"role_id"`
+	//Role 			Role
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }

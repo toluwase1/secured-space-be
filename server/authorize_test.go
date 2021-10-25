@@ -17,6 +17,7 @@ import (
 	"os"
 	"testing"
 )
+
 func TestMain(m *testing.M) {
 	if err := godotenv.Load("../.env"); err != nil {
 		log.Println(err.Error())

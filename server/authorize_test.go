@@ -11,15 +11,22 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 )
-func TestUnAuthorize(t *testing.T) {
-	if err := godotenv.Load(); err != nil {
-		t.Fail()
+func TestMain(m *testing.M) {
+	if err := godotenv.Load("../.env"); err != nil {
+		log.Println(err.Error())
 	}
+	exitCode := m.Run()
+
+	os.Exit(exitCode)
+}
+
+func TestUnAuthorize(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	m := db.NewMockDB(ctrl)
 
@@ -27,6 +34,7 @@ func TestUnAuthorize(t *testing.T) {
 		DB:     m,
 		Router: router.NewRouter(),
 	}
+
 	router := s.setupRouter()
 
 	t.Run("Test_For_Wrong_Secret_Key", func(t *testing.T) {
@@ -67,9 +75,6 @@ func TestUnAuthorize(t *testing.T) {
 }
 
 func TestAuthorize(t *testing.T) {
-	if err := godotenv.Load(); err != nil {
-		t.Fail()
-	}
 	ctrl := gomock.NewController(t)
 	m := db.NewMockDB(ctrl)
 

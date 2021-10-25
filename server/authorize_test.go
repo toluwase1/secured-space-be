@@ -43,6 +43,25 @@ func TestUnAuthorize(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 		assert.Contains(t, w.Body.String(), "unauthorized")
 	})
+
+	t.Run("Test_For_Blacklist", func(t *testing.T) {
+		accessClaims, _ := services.GenerateClaims("adebayo@gmail.com")
+
+		secret := os.Getenv("JWT_SECRET")
+		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+		if err != nil {
+			t.Fail()
+		}
+		m.EXPECT().TokenInBlacklist(accToken).Return(true)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "unauthorized")
+	})
 }
 
 //func TestAuthorize(t *testing.T) {

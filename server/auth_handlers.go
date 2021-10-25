@@ -16,14 +16,14 @@ import (
 
 func (s *Server) handleSignup() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := &models.User{Status: "active"}
+		user := &models.User{}
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
 		var err error
-		user.Password, err = services.GenerateHashPassword([]byte(user.PasswordString))
+		user.HashedPassword, err = services.GenerateHashPassword(user.Password)
 		if err != nil {
 			log.Printf("hash password err: %v\n", err)
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
@@ -66,7 +66,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword(user.Password, loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(user.Password), loginRequest.Password)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"username or password incorrect"})

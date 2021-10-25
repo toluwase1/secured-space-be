@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/router"
 	"github.com/decadevs/rentals-api/server/middleware"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // Server serves requests to DB with router

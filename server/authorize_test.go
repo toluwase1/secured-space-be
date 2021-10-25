@@ -9,6 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/mock/gomock"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -103,4 +104,25 @@ func TestAuthorize(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "retrieved users successfully")
 	})
 
+	t.Run("Test_FIndUserByEmail_Error", func(t *testing.T) {
+		accessClaims, _ := services.GenerateClaims("adebayo@gmail.com")
+
+		secret := os.Getenv("JWT_SECRET")
+		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+		if err != nil {
+			t.Fail()
+		}
+
+		user := &models.User{Email: "adebayo@gmail.com"}
+		m.EXPECT().FindUserByEmail(user.Email).Return(user, errors.New("an error occurred"))
+		m.EXPECT().TokenInBlacklist(accToken).Return(false)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Contains(t, w.Body.String(), "user not found")
+	})
 }

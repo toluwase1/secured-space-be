@@ -19,7 +19,10 @@ type User struct {
 	AccessToken    string    `json:"token,omitempty" bson:"token,omitempty"`
 }
 type Images struct {
-	ID            string `json:"id"`
-	Apartmeent_ID string `json:"apartmeent_id"`
-	Name          string `json:"name"`
+	ID          string `json:"id"`
+	ApartmentID string `json:"apartmeent_id"`
+	URL         string
+	Name        string `json:"name"`
+	CreateAt    time.Time
+	UpdateAt    time.Time
 }

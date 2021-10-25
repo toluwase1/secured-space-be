@@ -2,11 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"os"
 )
 
 // PostgresDB implements the DB interface
@@ -18,14 +18,14 @@ type PostgresDB struct {
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables
 	DBUser := os.Getenv("DB_USER")
-	DBPass := os.Getenv("DB_PASS")
+	//DBPass := os.Getenv("DB_PASS")
 	DBHost := os.Getenv("DB_HOST")
 	DBName := os.Getenv("DB_NAME")
 	DBPort := os.Getenv("DB_PORT")
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")
 
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v",DBHost,DBUser,DBPass,DBName,DBPort,DBMode,DBTimeZone)
+	dsn := fmt.Sprintf("host=%v user=%v dbname=%v port=%v sslmode=%v TimeZone=%v",DBHost,DBUser,DBName,DBPort,DBMode,DBTimeZone)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
@@ -33,8 +33,12 @@ func (postgresDB *PostgresDB) Init() {
 	postgresDB.DB = db
 }
 
+
+
+
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
-	return nil, nil
+	result := postgresDB.DB.Create(&user)
+	return user, result.Error
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
 	return nil, nil

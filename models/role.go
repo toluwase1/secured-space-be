@@ -3,6 +3,6 @@ package models
 import "gorm.io/gorm"
 
 type Role struct {
-	Title string
+	Title string `json:"title"`
 	gorm.Model
 }

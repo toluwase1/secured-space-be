@@ -72,7 +72,7 @@ func (s *Server) handleGetUsers() gin.HandlerFunc {
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 					return
 				}
-				response.JSON(c, "retrieved users sucessfully", http.StatusOK, gin.H{"users": users}, nil)
+				response.JSON(c, "retrieved users successfully", http.StatusOK, gin.H{"users": users}, nil)
 				return
 			}
 		}

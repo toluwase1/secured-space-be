@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"time"
+)
+
 
 // User holds a user details
 type User struct {
@@ -17,6 +20,7 @@ type User struct {
 	CreatedAt      time.Time `json:"created_at,omitempty" bson:"created_at,omitempty"`
 	UpdatedAt      time.Time `json:"updated_at,omitempty"`
 	AccessToken    string    `json:"token,omitempty" bson:"token,omitempty"`
+
 }
 type Images struct {
 	ID          string `json:"id"`

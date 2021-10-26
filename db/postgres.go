@@ -30,7 +30,6 @@ func (postgresDB *PostgresDB) Init() {
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
-	
 	postgresDB.DB = db
 }
 

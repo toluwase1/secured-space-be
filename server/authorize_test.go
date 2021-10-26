@@ -48,7 +48,7 @@ func TestUnAuthorize(t *testing.T) {
 		}
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
@@ -67,7 +67,7 @@ func TestUnAuthorize(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -102,7 +102,7 @@ func TestAuthorize(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
 
@@ -125,7 +125,7 @@ func TestAuthorize(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users", nil)
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer-%s", *accToken))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)

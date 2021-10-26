@@ -27,7 +27,7 @@ func Authorize(findUserByEmail func(string) (*models.User, error), tokenInBlackl
 		}
 
 		//TODO find a way to make sure accesstoken wont be nil, because we allow
-		//a token is epired error to reach here accessToken will be nill
+		//a token is expired error to reach here accessToken will be nil
 		//when that happens
 		if tokenInBlacklist(&accessToken.Raw) || isTokenExpired(accessClaims) {
 			rt := &struct {

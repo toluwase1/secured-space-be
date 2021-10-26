@@ -26,12 +26,12 @@ func TestSignupWithCorrectDetails(t *testing.T) {
 	router := s.setupRouter()
 
 	user := models.User{
-		FirstName:      "Spankie",
-		LastName:       "Dee",
-		PasswordString: "password",
-		Username:       "spankie",
-		Email:          "spankie_signup@gmail.com",
-		Phone:          "08909876787",
+		FirstName: "Spankie",
+		LastName:  "Dee",
+		Password:  "password",
+		Address:   "1, boli drive",
+		Email:     "spankie_signup@gmail.com",
+		Phone1:    "08909876787",
 	}
 
 	m.EXPECT().CreateUser(gomock.Any()).Return(&user, nil)
@@ -60,12 +60,11 @@ func TestSignupWithInCorrectDetails(t *testing.T) {
 	router := s.setupRouter()
 
 	user := models.User{
-		FirstName:      "Spankie",
-		LastName:       "Dee",
-		PasswordString: "password",
-		// Username:       "spankie",
-		Email: "spankie_signup",
-		Phone: "08909876787",
+		FirstName: "Spankie",
+		LastName:  "Dee",
+		Password:  "password",
+		Email:     "spankie_signup",
+		Phone1:    "08909876787",
 	}
 
 	jsonuser, err := json.Marshal(user)
@@ -80,5 +79,4 @@ func TestSignupWithInCorrectDetails(t *testing.T) {
 	bodyString := w.Body.String()
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Contains(t, bodyString, fmt.Sprintf("validation failed on field 'Email', condition: email, actual: %s", user.Email))
-	assert.Contains(t, bodyString, "validation failed on field 'Username', condition: required")
 }

@@ -23,7 +23,8 @@ func (s *Server) handleSignup() gin.HandlerFunc {
 			return
 		}
 		var err error
-		user.HashedPassword, err = services.GenerateHashPassword(user.Password)
+		HashedPassword, err := services.GenerateHashPassword(user.Password)
+		user.HashedPassword = string(HashedPassword)
 		if err != nil {
 			log.Printf("hash password err: %v\n", err)
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})

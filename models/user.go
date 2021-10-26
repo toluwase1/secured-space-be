@@ -18,3 +18,11 @@ type User struct {
 	UpdatedAt      time.Time `json:"updated_at,omitempty"`
 	AccessToken    string    `json:"token,omitempty" bson:"token,omitempty"`
 }
+type Images struct {
+	ID          string `json:"id"`
+	ApartmentID string `json:"apartment_id"`
+	URL         string
+	Name        string `json:"name"`
+	CreateAt    time.Time
+	UpdateAt    time.Time
+}

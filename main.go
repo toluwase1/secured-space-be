@@ -20,9 +20,11 @@ func main() {
 	}
 
 	DB := &db.PostgresDB{}
+
 	DB.Init()
 
 	DB.DB.AutoMigrate(&models.User{})
+
 	s := &server.Server{
 		DB:     DB,
 		Router: router.NewRouter(),

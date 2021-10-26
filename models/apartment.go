@@ -12,5 +12,6 @@ type Apartment struct {
 	Location      	string     `json:"location" gorm:"not null"`
 	Status        	bool       `json:"status" gorm:"not null"`
 	//Images        	[]Image    `json:"images" gorm:"not null"`
-    //Features		[]Feature  `json:"features" gorm:"not null"`
+    //Interior		[]Interior  `json:"interior" gorm:"not null; many2many:apartment_interior;"`
+    //Exterior     []Exterior   `json: "exterior" gorm: "not null; many2many:apartment_exterior;"`
 }

@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-
 	"github.com/decadevs/rentals-api/models"
 )
 

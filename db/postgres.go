@@ -58,7 +58,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 	return nil, nil
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	db := postgresDB.DB.Create(bookmarkApartment)
+	db := postgresDB.DB.Create(&bookmarkApartment)
 	return db.Error
 }
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {

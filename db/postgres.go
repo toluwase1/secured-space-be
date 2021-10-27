@@ -2,11 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"os"
 )
 
 // PostgresDB implements the DB interface
@@ -31,7 +31,16 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+
+	err = postgresDB.DB.AutoMigrate(&models.Role{})
+	roles := []models.Role{{Title: "tenant"}}
+
+	postgresDB.DB.Create(roles)
+	if err != nil {
+		return
+	}
 }
+
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
 	return nil, nil
@@ -40,7 +49,9 @@ func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User,
 	return nil, nil
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
-	return nil, nil
+	var user *models.User
+	userEmail := postgresDB.DB.Where("email = ?", email).First(&user)
+		return user, userEmail.Error
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil

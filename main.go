@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/decadevs/rentals-api/models"
 	"log"
 	"os"
 
@@ -20,14 +19,13 @@ func main() {
 	}
 
 	DB := &db.PostgresDB{}
-
 	DB.Init()
-
-	DB.DB.AutoMigrate(&models.User{})
+	
 
 	s := &server.Server{
 		DB:     DB,
 		Router: router.NewRouter(),
 	}
 	s.Start()
+	
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const AccessTokenValidity = time.Minute * 20
+const AccessTokenValidity = time.Hour * 24 * 30
 const RefreshTokenValidity = time.Hour * 24
 
 // GetTokenFromHeader returns the token string in the authorization header

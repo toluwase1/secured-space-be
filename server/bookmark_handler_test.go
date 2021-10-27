@@ -76,7 +76,7 @@ func TestServer_SaveBookmarkApartment(t *testing.T) {
 
 	t.Run("Test_For_Error_Saving_BookmarkApartment", func(t *testing.T) {
 		apartment := &models.BookmarkApartment{
-			UserID: "1234567asdf",
+			UserID:      "1234567asdf",
 			ApartmentID: "14uhjqhacgyqfa",
 		}
 		accToken := AuthorizeTestRoutes(m, t)
@@ -95,7 +95,7 @@ func TestServer_SaveBookmarkApartment(t *testing.T) {
 
 	t.Run("Test_For_Success", func(t *testing.T) {
 		apartment := &models.BookmarkApartment{
-			UserID: "1234567asdf",
+			UserID:      "1234567asdf",
 			ApartmentID: "14uhjqhacgyqfa",
 		}
 		accToken := AuthorizeTestRoutes(m, t)

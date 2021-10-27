@@ -23,7 +23,7 @@ func (s *Server) SaveBookmarkApartment() gin.HandlerFunc {
 					return
 				}
 				bookmarkApartment := &models.BookmarkApartment{
-					UserID: user.ID,
+					UserID:      user.ID,
 					ApartmentID: apartmentID,
 				}
 				if err := s.DB.SaveBookmarkApartment(bookmarkApartment); err != nil {

@@ -2,11 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"os"
 )
 
 // PostgresDB implements the DB interface
@@ -25,12 +25,16 @@ func (postgresDB *PostgresDB) Init() {
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")
 
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v",DBHost,DBUser,DBPass,DBName,DBPort,DBMode,DBTimeZone)
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Images{})
+	if err != nil {
+		log.Println("unable to migrate database.", err.Error())
+	}
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -55,5 +59,8 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 	return nil, nil
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
+	return nil, nil
+}
+func (postgresDB *PostgresDB) FindApartmentById(apartment string) (*models.User, error) {
 	return nil, nil
 }

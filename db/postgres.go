@@ -1,7 +1,9 @@
 package db
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
@@ -15,7 +17,8 @@ type PostgresDB struct {
 
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
-	dsn := "host=db user=postgres password=postgres dbname=rental port=5432 sslmode=disable TimeZone=Africa/Lagos"
+	dbname := os.Getenv("POSTGRES_DB")
+	dsn := fmt.Sprintf("host=db user=postgres password=password dbname=%s port=5432 sslmode=disable TimeZone=Africa/Lagos", dbname)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
@@ -36,7 +39,8 @@ func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil
 }
 func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error {
-	return nil
+	result := postgresDB.DB.Create(blacklist)
+	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
 	return false

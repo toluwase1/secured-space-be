@@ -57,7 +57,14 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
-func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment models.BookmarkApartment) error {
-	db := postgresDB.DB.Create(&bookmarkApartment)
+func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
+	db := postgresDB.DB.Create(bookmarkApartment)
 	return db.Error
+}
+func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
+	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	if result.RowsAffected == 1 {
+		return true
+	}
+	return false
 }

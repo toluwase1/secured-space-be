@@ -18,9 +18,9 @@ import (
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			Models:          models.Models{ID: uuid.New().String(),CreatedAt: time.Now(),UpdatedAt: time.Now()},
-			RoleID:          1,
-			Role:            models.Role{},
+			Models: models.Models{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
+			RoleID: 1,
+			Role:   models.Role{},
 		}
 
 		if errs := s.decode(c, user); errs != nil {
@@ -36,11 +36,11 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 		check, err := s.DB.FindUserByEmail(user.Email)
-		if err != nil{
+		if err != nil {
 			log.Printf("user could not be retrieved")
 			return
 		}
-		if user.Email == check.Email{
+		if user.Email == check.Email {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
@@ -58,13 +58,12 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	}
 }
 
-
 func (s *Server) handleSignupAgent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			Models:          models.Models{ID: uuid.New().String(),CreatedAt: time.Now(),UpdatedAt: time.Now()},
-			RoleID:          2,
-			Role:            models.Role{},
+			Models: models.Models{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
+			RoleID: 2,
+			Role:   models.Role{},
 		}
 
 		if errs := s.decode(c, user); errs != nil {
@@ -80,12 +79,12 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			return
 		}
 		check, err := s.DB.FindUserByEmail(user.Email)
-		if err != nil{
+		if err != nil {
 			log.Printf("user could not be retrieved")
 			return
 		}
 
-		if user.Email == check.Email{
+		if user.Email == check.Email {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}

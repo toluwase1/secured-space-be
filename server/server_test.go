@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func TestSignupWithInCorrectDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	m := db.NewMockDB(ctrl)
@@ -115,5 +114,3 @@ func TestSignupWithCorrectDetails(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Contains(t, w.Body.String(), "signup successful")
 }
-
-

@@ -1,11 +1,11 @@
 package models
 
-type Interior struct {
+type InteriorFeature struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-type Exterior struct {
+type ExteriorFeature struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }

@@ -8,17 +8,14 @@ import (
 	"github.com/decadevs/rentals-api/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"log"
 	"net/http"
 	"os"
 	"time"
 )
-
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			Models: models.Models{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
 			RoleID: 1,
 			Role:   models.Role{},
 		}
@@ -35,16 +32,13 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		check, err := s.DB.FindUserByEmail(user.Email)
-		if err != nil {
-			log.Printf("user could not be retrieved")
-			return
-		}
-		if user.Email == check.Email {
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
-		user, err = s.DB.CreateUser(user)
+
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -61,7 +55,6 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 func (s *Server) handleSignupAgent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			Models: models.Models{ID: uuid.New().String(), CreatedAt: time.Now(), UpdatedAt: time.Now()},
 			RoleID: 2,
 			Role:   models.Role{},
 		}
@@ -78,18 +71,13 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		check, err := s.DB.FindUserByEmail(user.Email)
-		if err != nil {
-			log.Printf("user could not be retrieved")
-			return
-		}
-
-		if user.Email == check.Email {
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
 
-		user, err = s.DB.CreateUser(user)
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -158,6 +146,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 		}, nil)
 	}
 }
+
 
 func (s *Server) handleLogout() gin.HandlerFunc {
 	return func(c *gin.Context) {

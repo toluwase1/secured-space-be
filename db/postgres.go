@@ -57,3 +57,7 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
+func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment models.BookmarkApartment) error {
+	db := postgresDB.DB.Create(&bookmarkApartment)
+	return db.Error
+}

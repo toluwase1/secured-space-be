@@ -18,7 +18,7 @@ type PostgresDB struct {
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	dbname := os.Getenv("POSTGRES_DB")
-	dsn := fmt.Sprintf("host=db user=postgres password=password dbname=%s port=5432 sslmode=disable TimeZone=Africa/Lagos", dbname)
+	dsn := fmt.Sprintf("host=localhost user=postgres password=12345678 dbname=%s port=5432 sslmode=disable TimeZone=Africa/Lagos", dbname)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)

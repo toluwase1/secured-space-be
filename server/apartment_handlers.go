@@ -26,7 +26,7 @@ func (s *Server) DeleteApartment() gin.HandlerFunc {
 				}
 				response.JSON(c, "Deleted Successfully", http.StatusOK, nil, nil)
 				return
-		}
+			}
 		}
 		log.Printf("can't get user from context\n")
 		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})

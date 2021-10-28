@@ -10,7 +10,6 @@ import (
 
 func (s *Server) DeleteApartment() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
 				apartmentID := c.Param("apartmentID")

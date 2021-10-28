@@ -14,6 +14,7 @@ import (
 	"time"
 )
 
+
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{

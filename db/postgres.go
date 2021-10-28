@@ -34,13 +34,14 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	//err = postgresDB.DB.AutoMigrate(&models.Role{})
-	//roles := []models.Role{{Title: "tenant"}}
-	//
-	//postgresDB.DB.Create(roles)
-	//if err != nil {
-	//	return
-	//}
+	err = postgresDB.DB.AutoMigrate(&models.Role{})
+	roles := []models.Role{{Title: "tenant"}}
+
+	postgresDB.DB.Create(roles)
+	if err != nil {
+		return
+	}
+
 
 	err = postgresDB.DB.AutoMigrate(&models.User{})
 	pass, err := services.GenerateHashPassword("password")

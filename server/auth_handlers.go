@@ -13,6 +13,7 @@ import (
 	"os"
 	"time"
 )
+
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
@@ -146,7 +147,6 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 		}, nil)
 	}
 }
-
 
 func (s *Server) handleLogout() gin.HandlerFunc {
 	return func(c *gin.Context) {

@@ -200,7 +200,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		Phone1:    "08909876787",
 	}
 
-	m.EXPECT().FindUserByEmail(gomock.Any()).Return(&user,nil)
+	m.EXPECT().FindUserByEmail(gomock.Any()).Return(&user, nil)
 	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
 	jsonuser, err := json.Marshal(user)
 	if err != nil {

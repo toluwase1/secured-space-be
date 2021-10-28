@@ -67,7 +67,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword([]byte(user.Password), loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(user.HashedPassword), loginRequest.Password)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email or password incorrect"})
@@ -75,7 +75,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 		}
 
 		// Generates access claims and refresh claims
-		accessClaims, refreshClaims := services.GenerateClaims(user.Email)
+		accessClaims, _ := services.GenerateClaims(user.Email)
 
 		secret := os.Getenv("JWT_SECRET")
 		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
@@ -85,17 +85,18 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			return
 		}
 
-		refreshToken, err := services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
-		if err != nil {
-			log.Printf("token generation error err: %v\n", err)
-			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
-			return
-		}
+		//refreshToken, err := services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
+		//if err != nil {
+		//	log.Printf("token generation error err: %v\n", err)
+		//	response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+		//	return
+		//}
+
 
 		response.JSON(c, "login successful", http.StatusOK, gin.H{
 			"user":          user,
 			"access_token":  *accToken,
-			"refresh_token": *refreshToken,
+			//"refresh_token": *refreshToken,
 		}, nil)
 	}
 }

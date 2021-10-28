@@ -19,11 +19,10 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 			if user, ok := userI.(*models.User); ok {
 				response.JSON(c, "user details retrieved correctly", http.StatusOK, gin.H{
 					"email":      user.Email,
-					"phone":      user.Phone,
+					"phone":      user.Phone1,
 					"first_name": user.FirstName,
 					"last_name":  user.LastName,
 					"image":      user.Image,
-					"username":   user.Username,
 				}, nil)
 				return
 			}
@@ -38,14 +37,14 @@ func (s *Server) handleUpdateUserDetails() gin.HandlerFunc {
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
 
-				username, email := user.Username, user.Email
+				email := user.Email
 				if errs := s.decode(c, user); errs != nil {
 					response.JSON(c, "", http.StatusBadRequest, nil, errs)
 					return
 				}
 
 				//TODO try to eliminate this
-				user.Username, user.Email = username, email
+				user.Email = email
 				user.UpdatedAt = time.Now()
 				if err := s.DB.UpdateUser(user); err != nil {
 					log.Printf("update user error : %v\n", err)
@@ -72,7 +71,7 @@ func (s *Server) handleGetUsers() gin.HandlerFunc {
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 					return
 				}
-				response.JSON(c, "retrieved users sucessfully", http.StatusOK, gin.H{"users": users}, nil)
+				response.JSON(c, "retrieved users successfully", http.StatusOK, gin.H{"users": users}, nil)
 				return
 			}
 		}
@@ -106,11 +105,10 @@ func (s *Server) handleGetUserByUsername() gin.HandlerFunc {
 
 		response.JSON(c, "user retrieved successfully", http.StatusOK, gin.H{
 			"email":      user.Email,
-			"phone":      user.Phone,
+			"phone":      user.Phone1,
 			"first_name": user.FirstName,
 			"last_name":  user.LastName,
 			"image":      user.Image,
-			"username":   user.Username,
 		}, nil)
 	}
 }

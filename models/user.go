@@ -4,17 +4,25 @@ import "time"
 
 // User holds a user details
 type User struct {
-	FirstName      string    `json:"first_name" bson:"first_name,omitempty" binding:"required" form:"first_name"`
-	LastName       string    `json:"last_name" bson:"last_name,omitempty" binding:"required" form:"last_name"`
-	Phone          string    `json:"phone,omitempty" bson:"phone,omitempty" binding:"required" form:"phone"`
-	Email          string    `json:"email" bson:"email,omitempty" binding:"required,email" form:"email"`
-	Username       string    `json:"username" bson:"username,omitempty" binding:"required" form:"username"`
-	Password       []byte    `json:"-" bson:"password,omitempty"`
-	PasswordString string    `json:"password,omitempty" bson:"-" binding:"required" form:"password"`
-	Reset          string    `json:"-" bson:"reset"`
-	Image          string    `json:"image,omitempty" bson:"image,omitempty"`
-	Status         string    `json:"status,omitempty"`
-	CreatedAt      time.Time `json:"created_at,omitempty" bson:"created_at,omitempty"`
-	UpdatedAt      time.Time `json:"updated_at,omitempty"`
-	AccessToken    string    `json:"token,omitempty" bson:"token,omitempty"`
+	Models
+	FirstName       string `json:"first_name" gorm:"type:not null" binding:"required" form:"first_name"`
+	LastName        string `json:"last_name" gorm:"type:not null" binding:"required" form:"last_name"`
+	Phone1          string `json:"phone" gorm:"type:not null" binding:"required" form:"phone1"`
+	Phone2          string `json:"phone_2" form:"phone2"`
+	Email           string `json:"email" gorm:"type:not null" binding:"required,email" form:"email"`
+	Address         string `json:"address" gorm:"type:not null" binding:"required" form:"address"`
+	HashedPassword  string `json:"-" gorm:"type:not null"`
+	Password        string `json:"password" gorm:"-" binding:"required" form:"password"`
+	ConfirmPassword string `json:"confirm_password" gorm:"-" form:"confirm_password"`
+	Image           string `json:"image,omitempty"`
+	RoleID          int    `json:"role_id"`
+	Role            Role
+}
+type Images struct {
+	ID          string `json:"id"`
+	ApartmentID string `json:"apartment_id"`
+	URL         string
+	Name        string `json:"name"`
+	CreateAt    time.Time
+	UpdateAt    time.Time
 }

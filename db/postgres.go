@@ -17,10 +17,10 @@ type PostgresDB struct {
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables
-	DBUser := os.Getenv("DB_USER")
-	DBPass := os.Getenv("DB_PASS")
+	DBUser := os.Getenv("POSTGRES_USER")
+	DBPass := os.Getenv("POSTGRES_PASSWORD")
 	DBHost := os.Getenv("DB_HOST")
-	DBName := os.Getenv("DB_NAME")
+	DBName := os.Getenv("POSTGRES_DB")
 	DBPort := os.Getenv("DB_PORT")
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")
@@ -31,7 +31,8 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Images{})
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Images{}, &models.Apartment{})
+
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
@@ -61,6 +62,6 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
-func (postgresDB *PostgresDB) FindApartmentById(apartment string) (*models.User, error) {
-	return nil, nil
+func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment) error {
+	return nil
 }

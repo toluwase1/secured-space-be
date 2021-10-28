@@ -2,12 +2,11 @@ package db
 
 import (
 	"fmt"
-	"log"
-	"os"
-
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"os"
 )
 
 // PostgresDB implements the DB interface
@@ -17,8 +16,16 @@ type PostgresDB struct {
 
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
-	dbname := os.Getenv("POSTGRES_DB")
-	dsn := fmt.Sprintf("host=localhost user=postgres password=12345678 dbname=%s port=5432 sslmode=disable TimeZone=Africa/Lagos", dbname)
+	// Database Variables
+	DBUser := os.Getenv("DB_USER")
+	DBPass := os.Getenv("DB_PASS")
+	DBHost := os.Getenv("DB_HOST")
+	DBName := os.Getenv("DB_NAME")
+	DBPort := os.Getenv("DB_PORT")
+	DBTimeZone := os.Getenv("DB_TIMEZONE")
+	DBMode := os.Getenv("DB_MODE")
+
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)

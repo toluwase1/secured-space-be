@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/decadevs/rentals-api/servererrors"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
-	"github.com/decadevs/rentals-api/servererrors"
 )
 
 // decode decodes the body of c into v

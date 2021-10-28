@@ -15,6 +15,7 @@ type DB interface {
 	TokenInBlacklist(token *string) bool
 	FindUserByPhone(phone string) (*models.User, error)
 	FindAllUsersExcept(except string) ([]models.User, error)
+	DeleteApartment(ID, userID string) error
 }
 
 // ValidationError defines error that occur due to validation

@@ -57,3 +57,7 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
+func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
+	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
+	return result.Error
+}

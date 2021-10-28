@@ -3,6 +3,8 @@ package db
 import (
 	"fmt"
 	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/services"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -32,10 +34,34 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	err = postgresDB.DB.AutoMigrate(&models.Role{})
-	roles := []models.Role{{Title: "tenant"}}
+	//err = postgresDB.DB.AutoMigrate(&models.Role{})
+	//roles := []models.Role{{Title: "tenant"}}
+	//
+	//postgresDB.DB.Create(roles)
+	//if err != nil {
+	//	return
+	//}
 
-	postgresDB.DB.Create(roles)
+	err = postgresDB.DB.AutoMigrate(&models.User{})
+	pass, err := services.GenerateHashPassword("password")
+	if err != nil {
+		return
+	}
+	users := []models.User{{
+		Models:          models.Models{ID: uuid.NewString()},
+		FirstName:       "John",
+		LastName:        "Doe",
+		Phone1:          "09087654321",
+		Phone2:          "08098765432",
+		Email:           "jdoe@gmail.com",
+		Address:         "5 tech park",
+		HashedPassword:  string(pass),
+		Password:        "",
+		ConfirmPassword: "",
+		RoleID:          1,
+	}}
+
+	postgresDB.DB.Create(users)
 	if err != nil {
 		return
 	}
@@ -50,7 +76,7 @@ func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User,
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
 	var user *models.User
-	userEmail := postgresDB.DB.Where("email = ?", email).First(&user)
+	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 		return user, userEmail.Error
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {

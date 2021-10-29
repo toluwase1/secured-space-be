@@ -31,6 +31,11 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+	err = postgresDB.DB.AutoMigrate(&models.Apartment{},models.Images{})
+	if err != nil {
+		return
+	}
+
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -55,5 +60,10 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 	return nil, nil
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
+	return nil, nil
+}
+
+
+func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) (*models.Apartment, error) {
 	return nil, nil
 }

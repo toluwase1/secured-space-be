@@ -14,7 +14,6 @@ import (
 	"time"
 )
 
-
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
@@ -78,7 +77,6 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
-
 		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)

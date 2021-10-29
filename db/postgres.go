@@ -17,10 +17,10 @@ type PostgresDB struct {
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables
-	DBUser := os.Getenv("POSTGRES_USER")
-	DBPass := os.Getenv("POSTGRES_PASSWORD")
+	DBUser := os.Getenv("DB_USER")
+	DBPass := os.Getenv("DB_PASS")
 	DBHost := os.Getenv("DB_HOST")
-	DBName := os.Getenv("POSTGRES_DB")
+	DBName := os.Getenv("DB_NAME")
 	DBPort := os.Getenv("DB_PORT")
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")

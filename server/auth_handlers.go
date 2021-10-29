@@ -75,7 +75,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 		}
 
 		// Generates access claims and refresh claims
-		accessClaims, _ := services.GenerateClaims(user.Email)
+		accessClaims, refreshClaims := services.GenerateClaims(user.Email)
 
 		secret := os.Getenv("JWT_SECRET")
 		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
@@ -85,18 +85,18 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			return
 		}
 
-		//refreshToken, err := services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
-		//if err != nil {
-		//	log.Printf("token generation error err: %v\n", err)
-		//	response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
-		//	return
-		//}
+		refreshToken, err := services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
+		if err != nil {
+			log.Printf("token generation error err: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
 
 
 		response.JSON(c, "login successful", http.StatusOK, gin.H{
 			"user":          user,
 			"access_token":  *accToken,
-			//"refresh_token": *refreshToken,
+			"refresh_token": *refreshToken,
 		}, nil)
 	}
 }

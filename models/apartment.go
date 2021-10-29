@@ -8,7 +8,7 @@ const (
 )
 
 type Apartment struct {
-	ID              string          `gorm:"type:uuid; default:uuid_generate_v4();size:100; not null"`
+	Models
 	UserID          string          `json:"user_id" gorm:"foreignkey:User(id)"`
 	Title           string          `json:"title" gorm:"not null"`
 	CategoryID      string          `json:"category_id"  gorm:"foreignkey: categories(id)"`

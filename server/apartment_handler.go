@@ -16,6 +16,11 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
+		_, err := s.DB.CreateApartment(&apartment)
+		if err != nil{
+			response.JSON(c,"",http.StatusBadRequest,nil,[]string{err.Error()})
+		}
+		response.JSON(c,"Apartment Successfully Added",http.StatusOK,nil,nil)
 
 	}
 }

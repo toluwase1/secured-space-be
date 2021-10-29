@@ -13,24 +13,26 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apartment := models.Apartment{}
 
-		// get the user id from a logged-in user
-		user, exists:= c.Get("user")
-		if !exists{
+		//get the user id from a logged-in user
+		user, exists := c.Get("user")
+		if !exists {
 			log.Printf("can't get user from context\n")
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 		}
 		userId := user.(*models.User).ID
 		apartment.UserID = userId
 
-		if errs := s.decode(c, apartment); errs != nil {
-			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+
+		if err := s.decode(c, &apartment); err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, err)
 			return
 		}
+
 		_, err := s.DB.CreateApartment(&apartment)
-		if err != nil{
-			response.JSON(c,"",http.StatusBadRequest,nil,[]string{err.Error()})
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
 		}
-		response.JSON(c,"Apartment Successfully Added",http.StatusOK,nil,nil)
+		response.JSON(c, "Apartment Successfully Added", http.StatusOK, nil, nil)
 
 	}
 }

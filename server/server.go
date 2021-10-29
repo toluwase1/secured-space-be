@@ -36,7 +36,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.GET("/me", s.handleShowProfile())
 
 	// apartment routes
-	authorized.POST("/user/apartments", s.handleCreateApartment())
+	apirouter.POST("/user/apartments", s.handleCreateApartment())
 }
 
 func (s *Server) setupRouter() *gin.Engine {

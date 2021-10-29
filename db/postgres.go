@@ -31,8 +31,8 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Images{}, &models.Apartment{})
-
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{})
+	err = postgresDB.DB.AutoMigrate(&models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
@@ -62,6 +62,7 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
-func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment) error {
-	return nil
+func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
+	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
+	return result.Error
 }

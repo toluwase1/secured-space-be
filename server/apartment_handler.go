@@ -22,7 +22,6 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		userId := user.(*models.User).ID
 		apartment.UserID = userId
 
-
 		if err := s.decode(c, &apartment); err != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, err)
 			return

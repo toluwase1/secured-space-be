@@ -31,7 +31,7 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-	err = postgresDB.DB.AutoMigrate(&models.Apartment{},models.Images{})
+	err = postgresDB.DB.AutoMigrate(&models.Apartment{}, models.Images{})
 	if err != nil {
 		return
 	}
@@ -63,7 +63,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 	return nil, nil
 }
 
-
 func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) (*models.Apartment, error) {
-	return nil, nil
+	apart := postgresDB.DB.Create(&apartment)
+	return apartment, apart.Error
 }

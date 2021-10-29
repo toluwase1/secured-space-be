@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/router"
@@ -17,12 +18,13 @@ import (
 func TestUpdateApartment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	m := db.NewMockDB(ctrl)
+	apartmentID := "12sdfg-456hcvbn-ut78okjh"
 
 	s := &Server{
 		DB:     m,
 		Router: router.NewRouter(),
 	}
-	router := s.setupRouter()
+	route := s.setupRouter()
 	apartment := &models.Apartment{
 		Title:           "2 bedrooms",
 		Description:     "Bay area lodge",
@@ -35,7 +37,17 @@ func TestUpdateApartment(t *testing.T) {
 		Exteriors:       []models.ExteriorFeature{{Name: "Garage"}, {Name: "pool"}},
 	}
 
-	m.EXPECT().UpdateApartment(apartment).Return(nil)
+	m.EXPECT().UpdateApartment(apartment, apartmentID).Return(nil)
+	t.Run("testing empty apartment id", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("PUT", fmt.Sprintf("/api/v1/user/%s/update", ""), nil)
+		route.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.Contains(t, w.Body.String(), "apartment id cannot be empty")
+	})
+
 	t.Run("testing it no error", func(t *testing.T) {
 		jsonapartment, err := json.Marshal(apartment)
 		if err != nil {
@@ -43,14 +55,14 @@ func TestUpdateApartment(t *testing.T) {
 			return
 		}
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("PUT", "/api/v1/user/apartment/update", strings.NewReader(string(jsonapartment)))
-		router.ServeHTTP(w, req)
+		req, _ := http.NewRequest("PUT", fmt.Sprintf("/api/v1/user/%s/update", apartmentID), strings.NewReader(string(jsonapartment)))
+		route.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "apartment updated successfully")
 	})
 
-	m.EXPECT().UpdateApartment(apartment).Return(errors.New("error exist"))
+	m.EXPECT().UpdateApartment(apartment, apartmentID).Return(errors.New("error exist"))
 	t.Run("testing error", func(t *testing.T) {
 		jsonapartment, err := json.Marshal(apartment)
 		if err != nil {
@@ -58,8 +70,8 @@ func TestUpdateApartment(t *testing.T) {
 			return
 		}
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("PUT", "/api/v1/user/apartment/update", strings.NewReader(string(jsonapartment)))
-		router.ServeHTTP(w, req)
+		req, _ := http.NewRequest("PUT", fmt.Sprintf("/api/v1/user/%s/update", apartmentID), strings.NewReader(string(jsonapartment)))
+		route.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusInternalServerError, w.Code)
 		assert.Contains(t, w.Body.String(), "internal server error")

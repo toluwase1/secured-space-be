@@ -48,7 +48,7 @@ func TestUpdateApartment(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "apartment id cannot be empty")
 	})
 
-	t.Run("testing it no error", func(t *testing.T) {
+	t.Run("testing if error does not exist", func(t *testing.T) {
 		jsonapartment, err := json.Marshal(apartment)
 		if err != nil {
 			t.Fail()

@@ -35,6 +35,8 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.GET("/users", s.handleGetUsers())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
+
+	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 }
 
 func (s *Server) setupRouter() *gin.Engine {

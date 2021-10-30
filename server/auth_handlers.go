@@ -14,9 +14,13 @@ import (
 	"time"
 )
 
-func (s *Server) handleSignup() gin.HandlerFunc {
+
+func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := &models.User{}
+		user := &models.User{
+			RoleID: 1,
+			Role:   models.Role{},
+		}
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
@@ -30,7 +34,52 @@ func (s *Server) handleSignup() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		user, err = s.DB.CreateUser(user)
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			return
+		}
+
+		_, err = s.DB.CreateUser(user)
+		if err != nil {
+			log.Printf("create user err: %v\n", err)
+			if err, ok := err.(db.ValidationError); ok {
+				response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+				return
+			}
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
+	}
+}
+
+func (s *Server) handleSignupAgent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := &models.User{
+			RoleID: 2,
+			Role:   models.Role{},
+		}
+
+		if errs := s.decode(c, user); errs != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+			return
+		}
+		var err error
+		HashedPassword, err := services.GenerateHashPassword(user.Password)
+		user.HashedPassword = string(HashedPassword)
+		if err != nil {
+			log.Printf("hash password err: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			return
+		}
+
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {

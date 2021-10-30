@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 // User holds a user details
 type User struct {
@@ -10,7 +12,7 @@ type User struct {
 	Phone1          string `json:"phone" gorm:"not null" binding:"required" form:"phone1"`
 	Phone2          string `json:"phone_2" form:"phone2"`
 	Email           string `json:"email" gorm:"not null" binding:"required,email" form:"email"`
-	Address         string `json:"address" gorm:"not null" binding:"required" form:"address"`
+	Address         string `json:"address" gorm:"not null" form:"address"`
 	HashedPassword  string `json:"-" gorm:"not null"`
 	Password        string `json:"password" gorm:"-" binding:"required" form:"password"`
 	ConfirmPassword string `json:"confirm_password" gorm:"-" form:"confirm_password"`

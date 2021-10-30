@@ -26,23 +26,34 @@ func (postgresDB *PostgresDB) Init() {
 	DBMode := os.Getenv("DB_MODE")
 
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
 
+	err = postgresDB.DB.AutoMigrate(&models.User{})
+	if err != nil {
+		fmt.Printf("err %v:", err.Error())
+	}
+
 }
 
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
-	return nil, nil
+	result := postgresDB.DB.Create(user)
+	return user, result.Error
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
-	return nil, nil
+	var user *models.User
+	result := postgresDB.DB.Where("username = ?", username).First(&user)
+	return user, result.Error
 }
+
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
 	var user *models.User
+
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 		return user, userEmail.Error
 }
@@ -60,4 +71,11 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
+}
+
+func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
+	return nil
+}
+func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
+	return false
 }

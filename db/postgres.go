@@ -71,7 +71,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
-
+}
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
 	return nil
 }

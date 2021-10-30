@@ -31,8 +31,7 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{})
-	err = postgresDB.DB.AutoMigrate(&models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}

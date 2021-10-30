@@ -7,7 +7,6 @@ import (
 	"github.com/decadevs/rentals-api/services"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -34,14 +33,12 @@ func Test_handleLogin(t *testing.T) {
 		}
 		jsonFile, err := json.Marshal(loginRequest)
 		if err != nil {
-			t.Fail()
+			t.Error("Failed to marshal file")
 		}
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/login", strings.NewReader(string(jsonFile)))
 
 		router.ServeHTTP(w, req)
-
-		log.Println(w.Body.String())
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Contains(t, w.Body.String(), "validation failed on field 'Password', condition: required")
 	})
@@ -60,7 +57,7 @@ func Test_handleLogin(t *testing.T) {
 		}
 		jsonFile, err := json.Marshal(loginRequest)
 		if err != nil {
-			t.Fail()
+			t.Error("Failed to marshal file")
 		}
 
 		w := httptest.NewRecorder()
@@ -68,7 +65,6 @@ func Test_handleLogin(t *testing.T) {
 
 
 		router.ServeHTTP(w, req)
-		log.Println(w.Body)
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "")
 	})

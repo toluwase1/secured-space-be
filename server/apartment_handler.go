@@ -14,12 +14,12 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		apartment := models.Apartment{}
 
 		//get the user id from a logged-in user
-		user, exists := c.Get("user")
+		userI, exists := c.Get("user")
 		if !exists {
 			log.Printf("can't get user from context\n")
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 		}
-		userId := user.(*models.User).ID
+		userId := userI.(*models.User).ID
 		apartment.UserID = userId
 
 		if err := s.decode(c, &apartment); err != nil {

@@ -77,6 +77,8 @@ func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmen
 }
 
 func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error{
-	   postgresDB.DB.Delete(bookmarkApartment)
-	   return nil
+	   result := postgresDB.DB.
+	   	Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
+	   	Delete(&models.BookmarkApartment{})
+	   return result.Error
 }

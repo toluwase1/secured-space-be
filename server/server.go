@@ -37,6 +37,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.GET("/me", s.handleShowProfile())
 
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
+	authorized.DELETE("/user/:apartmentID/bookmark", s.RemoveBookmarkedApartment())
 }
 
 func (s *Server) setupRouter() *gin.Engine {

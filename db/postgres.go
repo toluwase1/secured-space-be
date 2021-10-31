@@ -32,9 +32,6 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 	err = postgresDB.DB.AutoMigrate(&models.Apartment{}, &models.Images{}, &models.Category{}, &models.User{}, &models.ExteriorFeature{}, &models.InteriorFeature{})
-	if err != nil {
-		return
-	}
 
 }
 

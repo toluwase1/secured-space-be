@@ -17,7 +17,7 @@ type DB interface {
 	FindAllUsersExcept(except string) ([]models.User, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
-	GetBookmarkedApartments(user string) ([]models.Apartment, error)
+	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 }
 
 // ValidationError defines error that occur due to validation

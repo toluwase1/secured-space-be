@@ -19,6 +19,7 @@ func main() {
 	}
 
 	DB := &db.PostgresDB{}
+
 	DB.Init()
 
 	s := &server.Server{

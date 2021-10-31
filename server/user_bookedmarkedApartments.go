@@ -17,7 +17,7 @@ func (s *Server) GetBookmarkedApartments() gin.HandlerFunc {
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 					return
 				}
-				response.JSON(c, "retrieved users successfully", http.StatusOK, bookmarkedApartment, nil)
+				response.JSON(c, "retrieved bookmarks successfully", http.StatusOK, bookmarkedApartment, nil)
 			}
 		}
 	}

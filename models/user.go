@@ -16,6 +16,7 @@ type User struct {
 	HashedPassword  string `json:"-" gorm:"not null"`
 	Password        string `json:"password" gorm:"-" binding:"required" form:"password"`
 	ConfirmPassword string `json:"confirm_password" gorm:"-" form:"confirm_password"`
+	BookmarkApartment []Apartment `gorm:"many2many:bookmark_apartment"`
 	Image           string `json:"image,omitempty"`
 	RoleID          int    `json:"role_id"`
 	Role            Role

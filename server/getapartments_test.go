@@ -41,7 +41,6 @@ func TestApplication_GetAllApartments(t *testing.T) {
 
 	mockedDB.EXPECT().GetAllApartments(user.ID).Return(nil, errors.New("an error occurred"))
 	t.Run("Testing_Error_Getting_All_Apartments", func(t *testing.T) {
-
 		rw := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/apartments", nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))

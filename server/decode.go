@@ -9,7 +9,7 @@ import (
 // decode decodes the body of c into v
 func (s *Server) decode(c *gin.Context, v interface{}) []string {
 	if err := c.ShouldBindJSON(v); err != nil {
-		errs := []string{}
+		var errs []string
 		verr, ok := err.(validator.ValidationErrors)
 		if ok {
 			for _, fieldErr := range verr {

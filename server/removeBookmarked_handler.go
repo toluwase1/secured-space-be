@@ -15,8 +15,8 @@ func (s *Server) RemoveBookmarkedApartment() gin.HandlerFunc {
 			if user, ok := user.(*models.User); ok {
 				apartmentID := strings.TrimSpace(c.Param("apartmentID"))
 
-				if ok := s.DB.CheckApartmentInBookmarkApartment(user.ID, apartmentID); ok {
-					response.JSON(c, "", http.StatusBadRequest, nil, []string{"already bookmarked this apartment"})
+				if ok := s.DB.CheckApartmentInBookmarkApartment(user.ID, apartmentID); !ok {
+					response.JSON(c, "", http.StatusBadRequest, nil, []string{"apartment not bookmarked"})
 					return
 				}
 				rmbookmarkApartment := &models.BookmarkApartment{

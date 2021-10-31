@@ -18,7 +18,6 @@ type DB interface {
 	CreateApartment(apartment *models.Apartment) (*models.Apartment, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
-
 }
 
 // ValidationError defines error that occur due to validation

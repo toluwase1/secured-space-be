@@ -32,7 +32,7 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-  
+
 	err = postgresDB.DB.AutoMigrate(&models.Apartment{}, &models.Images{}, &models.Category{}, &models.User{}, &models.ExteriorFeature{}, &models.InteriorFeature{})
 	if err != nil {
 		fmt.Printf("err %v:", err.Error())

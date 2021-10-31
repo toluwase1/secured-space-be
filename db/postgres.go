@@ -30,6 +30,7 @@ func (postgresDB *PostgresDB) Init() {
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
+	db.AutoMigrate(&models.Apartment{}, &models.User{}, &models.ExteriorFeature{}, &models.InteriorFeature{}, &models.Category{}, &models.Role{}, &models.BookmarkApartment{})
 	postgresDB.DB = db
 }
 
@@ -56,4 +57,12 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
+}
+
+func (postgresDB *PostgresDB) GetAllApartments(userId string) ([]models.Apartment, error) {
+	var Apartments []models.Apartment
+
+	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+
+	return Apartments, result.Error
 }

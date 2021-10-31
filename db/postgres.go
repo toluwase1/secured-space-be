@@ -75,3 +75,8 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
 	return false
 }
+func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
+	user := &models.User{}
+	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	return user.BookmarkApartment, result.Error
+}

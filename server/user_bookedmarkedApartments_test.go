@@ -44,7 +44,7 @@ func TestApplication_BookmarkedApartments(t *testing.T) {
 	mockedDB.EXPECT().GetBookmarkedApartments(user.ID).Return(nil, nil)
 	t.Run("Test_For_Successful_Response", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/bookmarks", nil)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/bookmarks", nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 		router.ServeHTTP(rw, req)
 

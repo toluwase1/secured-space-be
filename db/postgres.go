@@ -75,3 +75,8 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
 	return false
 }
+
+func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error{
+	   postgresDB.DB.Delete(bookmarkApartment)
+	   return nil
+}

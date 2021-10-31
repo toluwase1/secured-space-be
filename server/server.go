@@ -25,7 +25,8 @@ type Server struct {
 
 func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter := router.Group("/api/v1")
-	apirouter.POST("/auth/signup", s.handleSignup())
+	apirouter.POST("/auth/signup_tenant", s.handleSignupTenant())
+	apirouter.POST("/auth/signup_agent", s.handleSignupAgent())
 	apirouter.POST("/auth/login", s.handleLogin())
 
 	authorized := apirouter.Group("/")
@@ -37,6 +38,8 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 
 	// apartment routes
 	authorized.POST("/user/apartments", s.handleCreateApartment())
+	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
+
 }
 
 func (s *Server) setupRouter() *gin.Engine {

@@ -15,6 +15,7 @@ type DB interface {
 	TokenInBlacklist(token *string) bool
 	FindUserByPhone(phone string) (*models.User, error)
 	FindAllUsersExcept(except string) ([]models.User, error)
+	UpdateApartment(apartment *models.Apartment, apartmentID string) error
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 }

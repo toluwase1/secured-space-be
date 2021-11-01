@@ -26,29 +26,26 @@ func (postgresDB *PostgresDB) Init() {
 	DBMode := os.Getenv("DB_MODE")
 
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
-
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
-	db.AutoMigrate(&models.Apartment{}, &models.User{}, &models.ExteriorFeature{}, &models.InteriorFeature{}, &models.Category{}, &models.Role{}, &models.BookmarkApartment{})
 	postgresDB.DB = db
+
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+	if err != nil {
+		log.Println("unable to migrate database.", err.Error())
+  }
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
-	result := postgresDB.DB.Create(user)
-	return user, result.Error
+	return nil, nil
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
-	var user *models.User
-	result := postgresDB.DB.Where("username = ?", username).First(&user)
-	return user, result.Error
+	return nil, nil
 }
-
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
-	var user *models.User
-	result := postgresDB.DB.Where("email = ?", email).First(&user)
-	return user, result.Error
+	return nil, nil
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil
@@ -65,7 +62,6 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
-
 func (postgresDB *PostgresDB) GetAllApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
 
@@ -74,9 +70,16 @@ func (postgresDB *PostgresDB) GetAllApartments(userId string) ([]models.Apartmen
 	return Apartments, result.Error
 }
 
+
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	return nil
+	db := postgresDB.DB.Create(&bookmarkApartment)
+	return db.Error
 }
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	return false
+	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	return result.RowsAffected == 1
+}
+func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
+	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
+	return result.Error
 }

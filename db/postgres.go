@@ -73,8 +73,10 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	return result.Error
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	return nil
+	db := postgresDB.DB.Create(&bookmarkApartment)
+	return db.Error
 }
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	return false
+	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	return result.RowsAffected == 1
 }

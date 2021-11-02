@@ -21,4 +21,5 @@ type Apartment struct {
 	Images          []Images          `json:"images" gorm:"not null"`
 	Interiors       []InteriorFeature `json:"interior" gorm:"not null; many2many:apartment_interiors"`
 	Exteriors       []ExteriorFeature `json:"exterior" gorm:"not null; many2many:apartment_exteriors"`
+
 }

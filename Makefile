@@ -21,4 +21,3 @@ up:
 	docker-compose up --build
 	
 # docker run -it --name=rentals-api -p 8080:8080 rentals
-

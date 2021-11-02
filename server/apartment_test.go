@@ -28,7 +28,7 @@ func TestServer_DeleteApartment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockDB := db.NewMockDB(ctrl)
 	s := &Server{
-		DB: mockDB,
+		DB:     mockDB,
 		Router: router.NewRouter(),
 	}
 	r := s.setupRouter()
@@ -54,7 +54,7 @@ func TestServer_DeleteApartment(t *testing.T) {
 		r.ServeHTTP(rw, req)
 
 		assert.Equal(t, http.StatusBadRequest, rw.Code)
-		assert.Contains(t, rw.Body.String(),"apartment id cannot be empty")
+		assert.Contains(t, rw.Body.String(), "apartment id cannot be empty")
 	})
 	mockDB.EXPECT().DeleteApartment("12323shjbvbhj1t", user.ID).Return(errors.New("an error occurred"))
 	t.Run("Test_Error-Deleting_Apartment", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestServer_DeleteApartment(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, rw.Code)
 		assert.Contains(t, rw.Body.String(), "Deleted Successfully")
-  })
+	})
 }
 
 func TestUpdateApartment(t *testing.T) {

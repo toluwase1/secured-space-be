@@ -19,6 +19,7 @@ type User struct {
 	Image           string `json:"image,omitempty"`
 	RoleID          int    `json:"role_id"`
 	Role            Role
+	Status			bool `json:"status" gorm:"default:false"`
 }
 type Images struct {
 	ID          string `json:"id"`

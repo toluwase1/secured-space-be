@@ -120,7 +120,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
-		router.ServeHTTP(w, req)
+		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Contains(t, w.Body.String(), "User email already exists")
@@ -131,7 +131,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	t.Run("If email does not exist in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
-		router.ServeHTTP(w, req)
+		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.Contains(t, w.Body.String(), "signup successful")
@@ -233,7 +233,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	if err != nil {
 		t.Fail()
 		return
-
+	}
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
@@ -243,7 +243,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	t.Run("check if user_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-		router.ServeHTTP(w, req)
+		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Contains(t, w.Body.String(), "User email already exists")
@@ -254,10 +254,9 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	t.Run("If email does not exist in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-		router.ServeHTTP(w, req)
+		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.Contains(t, w.Body.String(), "signup successful")
 	})
-
 }

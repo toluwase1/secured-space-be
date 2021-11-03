@@ -42,6 +42,15 @@ To contribute to Rentals-API, follow these steps:
 
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
+## Using the Rentals-API Email Template
+Mailchimp api  was used for sending emails to customers using the platform.
+
+1. To gain access to this template, log on to ([mailchimp](https://login.mailchimp.com))  you need to login with the rental-api verified username and password.
+2. Navigate to the create campaigns, then click on email templates.
+3. Click on the rental-api template.
+4. Edit the template, add the links desired and save the template.
+
+
 ## Contributors
 
 Thanks to the following people who have contributed to this project:
@@ -49,7 +58,7 @@ Thanks to the following people who have contributed to this project:
 * Odohi David ([spankie](https://github.com/spankie)) 📖
 * Toluwase Thomas ([toluwase1](https://github.com/toluwase1)) 📖
 * Olusola Alao ([olusolaa](https://github.com/olusolaa)) 📖
-* Tambarie Gbaragbo ([Tambarie](https://github.com/Tambarie)) 🐛
+* Emmanuel Gbaragbo ([Tambarie](https://github.com/Tambarie)) 🐛
 * Clinton Adebayo ([Ad3bay0c](https://github.com/Ad3bay0c)) 🐛
 * Omoyemi Arigbanla ([yemmyharry](https://github.com/yemmyharry)) 🐛
 * Victor Anyimukwu ([udodinho](https://github.com/udodinho)) 🐛

@@ -16,6 +16,7 @@ type DB interface {
 	FindUserByPhone(phone string) (*models.User, error)
 	FindAllUsersExcept(except string) ([]models.User, error)
 	CreateApartment(apartment *models.Apartment) (*models.Apartment, error)
+	DeleteApartment(ID, userID string) error
 	UpdateApartment(apartment *models.Apartment, apartmentID string) error
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool

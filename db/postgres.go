@@ -40,6 +40,7 @@ func (postgresDB *PostgresDB) Init() {
 
 }
 
+
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
 	return nil, nil
 }
@@ -47,7 +48,9 @@ func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User,
 	return nil, nil
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
-	return nil, nil
+	var user *models.User
+	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
+		return user, userEmail.Error
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil
@@ -70,6 +73,10 @@ func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) (*mod
 	return apartment, apart.Error
 }
 
+func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
+	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
+	return result.Error
+}
 
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
 	db := postgresDB.DB.Create(&bookmarkApartment)

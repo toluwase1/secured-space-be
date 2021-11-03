@@ -91,6 +91,14 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 	}
 }
 
+func (s *Server) VerifyAccount() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		
+	}
+}
+
+
+
 func (s *Server) handleLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{}

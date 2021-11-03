@@ -68,9 +68,9 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 	return nil, nil
 }
 
-func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) (*models.Apartment, error) {
-	apart := postgresDB.DB.Create(&apartment)
-	return apartment, apart.Error
+func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error {
+	err := postgresDB.DB.Create(&apartment).Error
+	return err
 }
 
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {

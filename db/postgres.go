@@ -35,7 +35,9 @@ func (postgresDB *PostgresDB) Init() {
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
+
 }
+
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
 	return nil, nil
@@ -44,7 +46,9 @@ func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User,
 	return nil, nil
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
-	return nil, nil
+	var user *models.User
+	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
+		return user, userEmail.Error
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil

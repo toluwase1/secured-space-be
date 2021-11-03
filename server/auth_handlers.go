@@ -95,7 +95,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{}
 		loginRequest := &struct {
-			Username string `json:"username" binding:"required"`
+			Email string `json:"email" binding:"required"`
 			Password string `json:"password" binding:"required"`
 		}{}
 
@@ -103,8 +103,8 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
-		// Check if the user with that username exists
-		user, err := s.DB.FindUserByUsername(loginRequest.Username)
+		// Check if the user with that email exists
+		user, err := s.DB.FindUserByEmail(loginRequest.Email)
 		if err != nil {
 			if inactiveErr, ok := err.(servererrors.InActiveUserError); ok {
 				response.JSON(c, "", http.StatusBadRequest, nil, []string{inactiveErr.Error()})
@@ -114,10 +114,10 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword([]byte(user.Password), loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(user.HashedPassword), loginRequest.Password)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
-			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"username or password incorrect"})
+			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email or password incorrect"})
 			return
 		}
 
@@ -138,6 +138,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
+
 
 		response.JSON(c, "login successful", http.StatusOK, gin.H{
 			"user":          user,

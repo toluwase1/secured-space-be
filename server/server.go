@@ -3,11 +3,15 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/decadevs/rentals-api/models"
+	"github.com/decadevs/rentals-api/services"
+	"github.com/dgrijalva/jwt-go"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"testing"
 	"time"
 
 	"github.com/decadevs/rentals-api/db"
@@ -33,10 +37,11 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
 	authorized.POST("/logout", s.handleLogout())
 	authorized.GET("/users", s.handleGetUsers())
-	authorized.GET("/apartments", s.handleGetAllApartments())
+	authorized.GET("/user-apartment", s.handleGetUserApartments())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
-
+	authorized.DELETE("/user/apartment/:apartmentID/", s.DeleteApartment())
+	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 }
 
@@ -123,4 +128,21 @@ func (s *Server) Start() {
 	}
 
 	log.Println("Server exiting")
+}
+
+func AuthorizeTestRoute(mDB *db.MockDB, t *testing.T, email string) (*models.User, *string) {
+	accessClaims, refreshClaims := services.GenerateClaims(email)
+
+	secret := os.Getenv("JWT_SECRET")
+	accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+	if err != nil {
+		t.Fail()
+	}
+	services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
+
+	user := &models.User{Email: email}
+	user.ID = "123456rtgfdvdsawer"
+	mDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
+	mDB.EXPECT().TokenInBlacklist(accToken).Return(false)
+	return user, accToken
 }

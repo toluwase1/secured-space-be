@@ -8,13 +8,13 @@ import (
 	"net/http"
 )
 
-func (s *Server) handleGetAllApartments() gin.HandlerFunc {
+func (s *Server) handleGetUserApartments() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// get all apartments should only be accessible by those that have the permission
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
 				//userId := c.Param("userId")
-				apartment, err := s.DB.GetAllApartments(user.ID)
+				apartment, err := s.DB.GetUsersApartments(user.ID)
 				if err != nil {
 					log.Printf("get apartments error : %v\n", err)
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
@@ -24,7 +24,6 @@ func (s *Server) handleGetAllApartments() gin.HandlerFunc {
 				return
 			}
 		}
-		log.Printf("can't get apartment from context\n")
 		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 		return
 	}

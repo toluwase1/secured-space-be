@@ -66,7 +66,7 @@ func Test_handleLogin(t *testing.T) {
 
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
-		assert.Contains(t, w.Body.String(), "")
+		assert.Contains(t, w.Body.String(), loginRequest.Email)
 	})
 }
 

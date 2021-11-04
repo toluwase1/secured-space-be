@@ -102,7 +102,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	}
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
 
 
 	jsonuser, err := json.Marshal(user)
@@ -139,6 +138,8 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	})
 
 }
+
+
 
 func TestSignupWithInCorrectDetailsAgent(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -227,7 +228,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
+
 
 	jsonuser, err := json.Marshal(user)
 	if err != nil {

@@ -5,9 +5,9 @@ on:
     branches: [ master, staging ]
   pull_request:
     branches: [ master, staging ]
-
+env:
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest

@@ -120,11 +120,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
-<<<<<<< HEAD
 		r.ServeHTTP(w, req)
-=======
-		router.ServeHTTP(w, req)
->>>>>>> master
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Contains(t, w.Body.String(), "User email already exists")
@@ -135,11 +131,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	t.Run("If email does not exist in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
-<<<<<<< HEAD
 		r.ServeHTTP(w, req)
-=======
-		router.ServeHTTP(w, req)
->>>>>>> master
 
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.Contains(t, w.Body.String(), "signup successful")
@@ -235,56 +227,39 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		Phone1:    "08909876787",
 	}
 
-
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-<<<<<<< HEAD
-=======
 	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
-
->>>>>>> master
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
 		return
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-	r.ServeHTTP(w, req)
-
-
-	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-	t.Run("check if user_email exists in the database", func(t *testing.T) {
+	}
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-<<<<<<< HEAD
 		r.ServeHTTP(w, req)
-=======
-		router.ServeHTTP(w, req)
->>>>>>> master
 
-		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "User email already exists")
-	})
+		m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
+		t.Run("check if user_email exists in the database", func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
+			r.ServeHTTP(w, req)
 
-	m.EXPECT().FindUserByEmail(user.Email).Return(&user, errors.New("no record found in database"))
-	m.EXPECT().CreateUser(gomock.Any()).Return(nil, nil)
-	t.Run("If email does not exist in the database", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-<<<<<<< HEAD
-		r.ServeHTTP(w, req)
-=======
-		router.ServeHTTP(w, req)
->>>>>>> master
+			assert.Equal(t, http.StatusNotFound, w.Code)
+			assert.Contains(t, w.Body.String(), "User email already exists")
+		})
 
-		assert.Equal(t, http.StatusCreated, w.Code)
-		assert.Contains(t, w.Body.String(), "signup successful")
-	})
-<<<<<<< HEAD
-=======
+		m.EXPECT().FindUserByEmail(user.Email).Return(&user, errors.New("no record found in database"))
+		m.EXPECT().CreateUser(gomock.Any()).Return(nil, nil)
+		t.Run("If email does not exist in the database", func(t *testing.T) {
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
+			r.ServeHTTP(w, req)
 
->>>>>>> master
-}
+			assert.Equal(t, http.StatusCreated, w.Code)
+			assert.Contains(t, w.Body.String(), "signup successful")
+		})
+
+	}
 
 
 

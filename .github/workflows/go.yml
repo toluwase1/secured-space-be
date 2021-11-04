@@ -34,7 +34,10 @@ jobs:
       run: go build -v .
 
     - name: Test
-      run: go test -v ./...
+      run: |
+        go get github.com/golang/mock/mockgen
+        make mock-db
+        go test -v ./...
 
     - uses: akhileshns/heroku-deploy@v3.12.12
       if: github.event_name == 'push' && github.ref == 'refs/heads/staging'

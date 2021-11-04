@@ -54,8 +54,8 @@ func Test_CreateApartment(t *testing.T) {
 	accToken, _ := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 	services.GenerateToken(&jwt.SigningMethodHMAC{}, refreshClaims, &secret)
 
-	mockedDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false)
-	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
+	mockedDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(2)
+	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(2)
 
 	mockedDB.EXPECT().CreateApartment(apartment).Return(nil)
 	t.Run("Testing_For_Apartment_Successfully_Added", func(t *testing.T) {
@@ -71,7 +71,7 @@ func Test_CreateApartment(t *testing.T) {
 	mockedDB.EXPECT().CreateApartment(apartment).Return( errors.New("error creating apartment"))
 	t.Run("Testing_For_Error_in_Creating_Apartment", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodPost, "/api/v1/user/apartments", nil)
+		req, _ := http.NewRequest(http.MethodPost, "/api/v1/user/apartments", strings.NewReader(string(marshalledApartment)))
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 		route.ServeHTTP(rw, req)
 

@@ -18,6 +18,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		if !exists {
 			log.Printf("can't get user from context\n")
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
 		}
 		userId := userI.(*models.User).ID
 		apartment.UserID = userId
@@ -30,6 +31,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		err := s.DB.CreateApartment(&apartment)
 		if err != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
 		}
 		response.JSON(c, "Apartment Successfully Added", http.StatusOK, apartment, nil)
 

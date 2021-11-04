@@ -102,9 +102,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	}
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
-
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
@@ -226,13 +223,11 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	}
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-	m.EXPECT().CreateUser(user.Email).Return(&user, nil)
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
 		return
-
+	}
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
 		r.ServeHTTP(w, req)
@@ -259,4 +254,4 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		})
 
 	}
-}
+

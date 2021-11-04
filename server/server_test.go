@@ -228,8 +228,6 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()

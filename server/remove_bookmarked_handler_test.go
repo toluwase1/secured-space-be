@@ -35,15 +35,17 @@ func TestApplication_RemoveBookmarked(t *testing.T) {
 	accToken, _ := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 	services.GenerateToken(jwt.SigningMethodHS256, refreshClaimns, &secret)
 
+	url := "/api/v1/user/156uhjqhacgyqfa/removebookmark"
+
 	mockedDB.EXPECT().TokenInBlacklist(accToken).Return(false).Times(3)
 	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(3)
 
 	t.Run("Test_For_Already_Bookmarked_Apartment", func(t *testing.T) {
 
-		mockedDB.EXPECT().CheckApartmentInBookmarkApartment("1234567asdf", "14uhjqhacgyqfa").Return(false)
+		mockedDB.EXPECT().CheckApartmentInBookmarkApartment("1234567asdf", "156uhjqhacgyqfa").Return(false)
 
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodDelete, "/api/v1/user/14uhjqhacgyqfa/removebookmark", nil)
+		req, _ := http.NewRequest(http.MethodDelete, url, nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
@@ -62,7 +64,8 @@ func TestApplication_RemoveBookmarked(t *testing.T) {
 		mockedDB.EXPECT().CheckApartmentInBookmarkApartment("1234567asdf", "156uhjqhacgyqfa").Return(true)
 		mockedDB.EXPECT().RemoveBookmarkedApartment(apartment).Return(errors.New("an error occurred"))
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodDelete, "/api/v1/user/156uhjqhacgyqfa/removebookmark", nil)
+
+		req, _ := http.NewRequest(http.MethodDelete, url, nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
@@ -81,13 +84,13 @@ func TestApplication_RemoveBookmarked(t *testing.T) {
 		mockedDB.EXPECT().CheckApartmentInBookmarkApartment("1234567asdf", "156uhjqhacgyqfa").Return(true)
 		mockedDB.EXPECT().RemoveBookmarkedApartment(apartment).Return(nil)
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodDelete, "/api/v1/user/156uhjqhacgyqfa/removebookmark", nil)
+		req, _ := http.NewRequest(http.MethodDelete, url, nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 
 		router.ServeHTTP(w, req)
 
 		log.Println(w.Body)
 		assert.Equal(t, http.StatusOK, w.Code)
-		assert.Contains(t, w.Body.String(), "Bookmarked Remove  Successfully")
+		assert.Contains(t, w.Body.String(), "Bookmarked Remove Successfully")
 	})
 }

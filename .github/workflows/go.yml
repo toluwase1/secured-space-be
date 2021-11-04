@@ -38,6 +38,8 @@ jobs:
         go get github.com/golang/mock/mockgen
         make mock-db
         go test -v ./...
+      env:
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     - uses: akhileshns/heroku-deploy@v3.12.12
       if: github.event_name == 'push' && github.ref == 'refs/heads/staging'

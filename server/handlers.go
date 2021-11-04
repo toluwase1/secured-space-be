@@ -5,6 +5,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/decadevs/rentals-api/models"
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -30,4 +33,14 @@ func uploadFileToS3(s *session.Session, file multipart.File, fileName string, si
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
 	return err
+}
+
+func GetUserFromContext(c *gin.Context) (*models.User, error){
+	if userI, exists := c.Get("user"); exists {
+		if user, ok := userI.(*models.User); ok {
+			return user, nil
+		}
+		return nil, errors.New("User is not logged in")
+	}
+	return nil, errors.New("user is not logged in")
 }

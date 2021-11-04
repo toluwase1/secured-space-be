@@ -35,7 +35,7 @@ func TestApplication_RemoveBookmarked(t *testing.T) {
 	accToken, _ := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 	services.GenerateToken(jwt.SigningMethodHS256, refreshClaimns, &secret)
 
-	url := "/api/v1/user/156uhjqhacgyqfa/removebookmark"
+	url := "/api/v1/user/apartment/156uhjqhacgyqfa/removebookmark"
 
 	mockedDB.EXPECT().TokenInBlacklist(accToken).Return(false).Times(3)
 	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(3)

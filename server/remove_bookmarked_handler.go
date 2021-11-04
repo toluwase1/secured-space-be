@@ -33,7 +33,7 @@ func (s *Server) RemoveBookmarkedApartment() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		response.JSON(c, "Bookmarked Remove  Successfully", http.StatusOK, nil, nil)
+		response.JSON(c, "Bookmarked Remove Successfully", http.StatusOK, nil, nil)
 		return
 	}
 

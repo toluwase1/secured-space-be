@@ -103,7 +103,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
@@ -113,7 +112,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
-
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
@@ -138,8 +136,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	})
 
 }
-
-
 
 func TestSignupWithInCorrectDetailsAgent(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -226,7 +222,6 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		Phone1:    "08909876787",
 	}
 
-
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
@@ -236,7 +231,6 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
-
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if user_email exists in the database", func(t *testing.T) {

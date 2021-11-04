@@ -9,7 +9,8 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-playground/validator/v10 v10.2.0
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.6.0
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect

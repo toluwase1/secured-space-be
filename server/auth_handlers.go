@@ -14,9 +14,12 @@ import (
 	"time"
 )
 
-func (s *Server) handleSignup() gin.HandlerFunc {
+func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := &models.User{}
+		user := &models.User{
+			RoleID: 1,
+			Role:   models.Role{},
+		}
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
@@ -30,7 +33,51 @@ func (s *Server) handleSignup() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		user, err = s.DB.CreateUser(user)
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			return
+		}
+
+		_, err = s.DB.CreateUser(user)
+		if err != nil {
+			log.Printf("create user err: %v\n", err)
+			if err, ok := err.(db.ValidationError); ok {
+				response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+				return
+			}
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
+	}
+}
+
+func (s *Server) handleSignupAgent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := &models.User{
+			RoleID: 2,
+			Role:   models.Role{},
+		}
+
+		if errs := s.decode(c, user); errs != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+			return
+		}
+		var err error
+		HashedPassword, err := services.GenerateHashPassword(user.Password)
+		user.HashedPassword = string(HashedPassword)
+		if err != nil {
+			log.Printf("hash password err: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		_, err = s.DB.FindUserByEmail(user.Email)
+		if err == nil {
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			return
+		}
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -48,7 +95,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{}
 		loginRequest := &struct {
-			Username string `json:"username" binding:"required"`
+			Email string `json:"email" binding:"required"`
 			Password string `json:"password" binding:"required"`
 		}{}
 
@@ -56,8 +103,8 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
-		// Check if the user with that username exists
-		user, err := s.DB.FindUserByUsername(loginRequest.Username)
+		// Check if the user with that email exists
+		user, err := s.DB.FindUserByEmail(loginRequest.Email)
 		if err != nil {
 			if inactiveErr, ok := err.(servererrors.InActiveUserError); ok {
 				response.JSON(c, "", http.StatusBadRequest, nil, []string{inactiveErr.Error()})
@@ -67,10 +114,10 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword([]byte(user.Password), loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(user.HashedPassword), loginRequest.Password)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
-			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"username or password incorrect"})
+			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email or password incorrect"})
 			return
 		}
 
@@ -91,6 +138,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
+
 
 		response.JSON(c, "login successful", http.StatusOK, gin.H{
 			"user":          user,

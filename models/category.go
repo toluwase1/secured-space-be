@@ -2,5 +2,5 @@ package models
 
 type Category struct {
 	Models
-	Name      string `json:"name"`
+	Name string `json:"name"`
 }

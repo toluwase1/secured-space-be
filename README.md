@@ -42,6 +42,44 @@ To contribute to Rentals-API, follow these steps:
 
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
+## Setting Environmental Variables
+An environment variable is a text file containing ``KEY=value`` pairs of your secret keys and other private information. For security purposes, it is ignored using ``.gitignore`` and not committed with the rest of your codebase.
+
+To create, ensure you are in the root directory of the project then on your terminal type:
+```
+touch .env
+```
+All the variables used within the project can now be added within the ``.env`` file in the following format:
+```
+DB_HOST=127.0.0.1
+DB_PORT=8080
+DB_USER=<your db username>
+DB_PASS=<your db password>
+```
+
+
+## Tests
+Testing is done using the GoMock framework. The ``gomock`` package and the ``mockgen``code generation tool are used for this purpose.
+If you installed the dependencies using the command given above, then the packages would have been installed. Otherwise, installation can be done using the following commands:
+```
+go get github.com/golang/mock/gomock
+go get github.com/golang/mock/mockgen
+```
+
+After installing the packages, run:
+```
+make mock-db
+```
+
+The command above helps to generate mock interfaces from a source file.
+
+To run tests, run:
+```
+make test
+```
+
+
+
 ## Contributors
 
 Thanks to the following people who have contributed to this project:

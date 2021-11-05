@@ -31,7 +31,9 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+
 	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
@@ -64,14 +66,22 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
+
+func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error {
+	err := postgresDB.DB.Create(&apartment).Error
+	return err
+}
+
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
 }
+
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
 	db := postgresDB.DB.Create(&bookmarkApartment)
 	return db.Error
 }
+
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
 	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1

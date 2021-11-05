@@ -95,7 +95,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{}
 		loginRequest := &struct {
-			Email string `json:"email" binding:"required"`
+			Email    string `json:"email" binding:"required"`
 			Password string `json:"password" binding:"required"`
 		}{}
 
@@ -138,7 +138,6 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-
 
 		response.JSON(c, "login successful", http.StatusOK, gin.H{
 			"user":          user,

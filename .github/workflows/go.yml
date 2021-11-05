@@ -7,7 +7,7 @@ on:
     branches: [ master, staging ]
 
 env:
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  JWT_SECRET: ${{secrets.JWT_SECRET}}
 
 jobs:
   build:
@@ -46,5 +46,6 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name:  "rentals-api"
         heroku_email: ${{secrets.TAMBARIE_EMAIL}}
+
 
 

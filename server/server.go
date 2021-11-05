@@ -33,7 +33,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
 	authorized.POST("/logout", s.handleLogout())
 	authorized.GET("/users", s.handleGetUsers())
-	authorized.GET("/user/bookmarks", s.GetBookmarkedApartments())
+	authorized.GET("/bookmark/apartments", s.GetBookmarkedApartments())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
 

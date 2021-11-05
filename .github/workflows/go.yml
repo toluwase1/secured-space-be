@@ -10,12 +10,10 @@ env:
   JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -48,4 +46,5 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name:  "rentals-api"
         heroku_email: ${{secrets.TAMBARIE_EMAIL}}
+
 

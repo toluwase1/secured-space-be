@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
-	"github.com/decadevs/rentals-api/router"
+	r "github.com/decadevs/rentals-api/router"
 	"github.com/decadevs/rentals-api/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -21,7 +22,7 @@ func TestApplication_BookmarkedApartments(t *testing.T) {
 
 	s := &Server{
 		DB:     mockedDB,
-		Router: router.NewRouter(),
+		Router: r.NewRouter(),
 	}
 	router := s.setupRouter()
 	user := &models.User{
@@ -37,18 +38,28 @@ func TestApplication_BookmarkedApartments(t *testing.T) {
 	accToken, _ := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 	services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
 
-	mockedDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false)
-	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
+	mockedDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(2)
+	mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(2)
 	//mockedDB.EXPECT().GetBookmarkedApartment(user.ID).Return(user.ID, nil).Times(2)
 
 	mockedDB.EXPECT().GetBookmarkedApartments(user.ID).Return(nil, nil)
 	t.Run("Test_For_Successful_Response", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, "/api/v1/user/bookmarks", nil)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/bookmark/apartments", nil)
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 		router.ServeHTTP(rw, req)
-
 		assert.Equal(t, http.StatusOK, rw.Code)
 		assert.Contains(t, rw.Body.String(), "retrieved bookmarks successfully")
+	})
+
+	mockedDB.EXPECT().GetBookmarkedApartments(user.ID).Return(nil, errors.New("An error occurred"))
+
+	t.Run("Test_For_Error_in_Getting_Bookmarked_Apartment", func(t *testing.T) {
+		rw := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/bookmark/apartments", nil)
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
+		router.ServeHTTP(rw, req)
+		assert.Equal(t, http.StatusInternalServerError, rw.Code)
+		assert.Contains(t, rw.Body.String(), "internal server error")
 	})
 }

@@ -3,16 +3,36 @@ package server
 import (
 	"fmt"
 	"github.com/decadevs/rentals-api/db"
+	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/router"
+	"github.com/decadevs/rentals-api/services"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
 
+func AuthorizeTestRoute(mDB *db.MockDB, t *testing.T, email string) (*models.User, *string) {
+	accessClaims, refreshClaims := services.GenerateClaims(email)
+
+	secret := os.Getenv("JWT_SECRET")
+	accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+	if err != nil {
+		t.Fail()
+	}
+	services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
+
+	user := &models.User{Email: email}
+	user.ID = "123456rtgfdvdsawer"
+	mDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
+	mDB.EXPECT().TokenInBlacklist(accToken).Return(false)
+	return user, accToken
+}
 
 func TestApplication_GetUserApartments(t *testing.T) {
 	ctrl := gomock.NewController(t)

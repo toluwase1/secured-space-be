@@ -35,7 +35,8 @@ func (postgresDB *PostgresDB) Init() {
 	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
 
 	if err != nil {
-		log.Println("unable to migrate database.", err.Error())
+		log.Panicln(err.Error())
+
 	}
 
 }
@@ -67,6 +68,14 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 	return nil, nil
 }
 
+func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
+	var Apartments []models.Apartment
+
+	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+
+	return Apartments, result.Error
+}
+
 func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error {
 	err := postgresDB.DB.Create(&apartment).Error
 	return err
@@ -76,7 +85,6 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
 }
-
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
 	db := postgresDB.DB.Create(&bookmarkApartment)
 	return db.Error

@@ -43,7 +43,7 @@ To contribute to Rentals-API, follow these steps:
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
 ## Using the Rentals-API Email Template
-Mailchimp api  was used for sending emails to customers using the platform.
+Mailchimp api  is used for sending emails to customers using the platform.
 
 1. To gain access to this template, log on to ([mailchimp](https://login.mailchimp.com))  you need to login with the rental-api verified username and password.
 2. Navigate to the create campaigns, then click on email templates.

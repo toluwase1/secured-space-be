@@ -3,17 +3,16 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
-
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/router"
 	"github.com/golang/mock/gomock"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
 )
 
 func TestSignupWithInCorrectDetailsTenant(t *testing.T) {
@@ -255,3 +254,4 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 
 }
 
+	

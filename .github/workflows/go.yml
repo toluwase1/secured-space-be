@@ -8,12 +8,15 @@ on:
 env:
   JWT_SECRET: ${{secrets.JWT_SECRET}}
 
+env:
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
+    
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:

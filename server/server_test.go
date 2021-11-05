@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/router"
@@ -253,3 +252,4 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "signup successful")
 	})
 }
+

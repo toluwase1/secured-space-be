@@ -42,6 +42,14 @@ To contribute to Rentals-API, follow these steps:
 
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
+## Using the Rentals-API Email Template
+Mailchimp api  is used for sending emails to customers using the platform.
+
+1. To gain access to this template, log on to ([mailchimp](https://login.mailchimp.com))  you need to login with the rental-api verified username and password.
+2. Navigate to the create campaigns, then click on email templates.
+3. Click on the rental-api template.
+4. Edit the template, add the links desired and save the template.
+
 ## Setting Environmental Variables
 An environment variable is a text file containing ``KEY=value`` pairs of your secret keys and other private information. For security purposes, it is ignored using ``.gitignore`` and not committed with the rest of your codebase.
 
@@ -77,8 +85,6 @@ To run tests, run:
 ```
 make test
 ```
-
-
 
 ## Contributors
 

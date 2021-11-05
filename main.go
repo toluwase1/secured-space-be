@@ -21,11 +21,9 @@ func main() {
 	DB := &db.PostgresDB{}
 
 	DB.Init()
-
 	s := &server.Server{
 		DB:     DB,
 		Router: router.NewRouter(),
 	}
 	s.Start()
-
 }

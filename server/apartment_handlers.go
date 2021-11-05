@@ -8,6 +8,36 @@ import (
 	"net/http"
 )
 
+func (s *Server) handleCreateApartment() gin.HandlerFunc {
+	// function to handle adding an apartment
+	return func(c *gin.Context) {
+		apartment := models.Apartment{}
+
+		//get the user id from a logged-in user
+		userI, exists := c.Get("user")
+		if !exists {
+			log.Printf("can't get user from context\n")
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		userId := userI.(*models.User).ID
+		apartment.UserID = userId
+
+		if err := s.decode(c, &apartment); err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, err)
+			return
+		}
+
+		err := s.DB.CreateApartment(&apartment)
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+		response.JSON(c, "Apartment Successfully Added", http.StatusOK, apartment, nil)
+
+	}
+}
+
 func (s *Server) DeleteApartment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if userI, exists := c.Get("user"); exists {

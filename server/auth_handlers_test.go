@@ -43,7 +43,6 @@ func Test_handleLogin(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "validation failed on field 'Password', condition: required")
 	})
 
-
 	t.Run("Test_FindUserByEmail", func(t *testing.T) {
 		hashedP, _ := services.GenerateHashPassword("password")
 		user := &models.User{Email: "jdoe@gmail.com", HashedPassword: string(hashedP)}
@@ -63,11 +62,8 @@ func Test_handleLogin(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodPost, "/api/v1/auth/login", strings.NewReader(string(jsonFile)))
 
-
 		router.ServeHTTP(w, req)
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "")
 	})
 }
-
-

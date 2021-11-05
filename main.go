@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	env := os.Getenv("GIN_MODE")
 	if env != "release" {
 		if err := godotenv.Load(); err != nil {
@@ -20,11 +21,9 @@ func main() {
 
 	DB := &db.PostgresDB{}
 	DB.Init()
-
 	s := &server.Server{
 		DB:     DB,
 		Router: router.NewRouter(),
 	}
 	s.Start()
-
 }

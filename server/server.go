@@ -33,10 +33,18 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
 	authorized.POST("/logout", s.handleLogout())
 	authorized.GET("/users", s.handleGetUsers())
+	authorized.GET("/user-apartment", s.handleGetUserApartments())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
 
+
+
+	// apartment routes
+	authorized.POST("/user/apartments", s.handleCreateApartment())
+	authorized.DELETE("/user/apartment/:apartmentID/", s.DeleteApartment())
+	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
+
 }
 
 func (s *Server) setupRouter() *gin.Engine {
@@ -123,3 +131,4 @@ func (s *Server) Start() {
 
 	log.Println("Server exiting")
 }
+

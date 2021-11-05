@@ -99,3 +99,8 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
 	return result.Error
 }
+func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
+	user := &models.User{}
+	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	return user.BookmarkedApartments, result.Error
+}

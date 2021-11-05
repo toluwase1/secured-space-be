@@ -2,6 +2,9 @@ package db
 
 import (
 	"fmt"
+	"mime/multipart"
+
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/decadevs/rentals-api/models"
 )
 
@@ -22,7 +25,7 @@ type DB interface {
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
-
+	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error
 }
 
 // ValidationError defines error that occur due to validation

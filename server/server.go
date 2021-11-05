@@ -37,6 +37,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.GET("/user-apartment", s.handleGetUserApartments())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
+	authorized.POST("/me/uploadpic", s.handleUploadProfilePic())
 
 	// apartment routes
 	authorized.POST("/user/apartments", s.handleCreateApartment())
@@ -130,4 +131,3 @@ func (s *Server) Start() {
 
 	log.Println("Server exiting")
 }
-

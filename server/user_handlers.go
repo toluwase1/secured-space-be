@@ -1,15 +1,19 @@
 package server
 
 import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/decadevs/rentals-api/servererrors"
 	"github.com/decadevs/rentals-api/services"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
-	"os"
-	"time"
 )
 
 // handleShowProfile returns user's details
@@ -116,7 +120,6 @@ func (s *Server) handleGetUserByUsername() gin.HandlerFunc {
 // handleUploadProfilePic uploads a user's profile picture
 func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
 
@@ -132,26 +135,29 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 
 				file, fileHeader, err := r.FormFile("profile_picture")
 				if err != nil {
-					log.Println(err)
+
+					log.Println("error getting profile picture", err)
 					response.JSON(c, "", http.StatusBadRequest, nil, []string{"image not supplied"})
 					return
 				}
 				defer file.Close()
 
-				fileExtension, ok := services.CheckSupportedFile(fileHeader.Filename)
-				if !ok {
+				fileExtension, ok := services.CheckSupportedFile(strings.ToLower(fileHeader.Filename))
+				log.Printf(filepath.Ext(strings.ToLower(fileHeader.Filename)))
+				fmt.Println(fileExtension)
+				if ok {
 					log.Println(fileExtension)
 					response.JSON(c, "", http.StatusBadRequest, nil, []string{fileExtension + " image file type is not supported"})
 					return
 				}
 
-				session, tempFileName, err := services.SaveFile(fileExtension)
+				session, tempFileName, err := services.PreAWS(fileExtension)
 
 				if err != nil {
 					log.Printf("could not upload file: %v\n", err)
 				}
 
-				err = uploadFileToS3(session, file, tempFileName, fileHeader.Size)
+				err = s.DB.UploadFileToS3(session, file, tempFileName, fileHeader.Size)
 				if err != nil {
 					log.Println(err)
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
@@ -159,11 +165,6 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 				}
 
 				user.Image = os.Getenv("S3_BUCKET") + tempFileName
-				if err = s.DB.UpdateUser(user); err != nil {
-					log.Println(err)
-					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"unable to update user's profile pic"})
-					return
-				}
 
 				response.JSON(c, "successfully created file", http.StatusOK, gin.H{
 					"imageurl": user.Image,

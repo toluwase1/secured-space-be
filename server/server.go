@@ -126,19 +126,3 @@ func (s *Server) Start() {
 	log.Println("Server exiting")
 }
 
-//func AuthorizeTestRoute(mDB *db.MockDB, t *testing.T, email string) (*models.User, *string) {
-//	accessClaims, refreshClaims := services.GenerateClaims(email)
-//
-//	secret := os.Getenv("JWT_SECRET")
-//	accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
-//	if err != nil {
-//		t.Fail()
-//	}
-//	services.GenerateToken(jwt.SigningMethodHS256, refreshClaims, &secret)
-//
-//	user := &models.User{Email: email}
-//	user.ID = "123456rtgfdvdsawer"
-//	mDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
-//	mDB.EXPECT().TokenInBlacklist(accToken).Return(false)
-//	return user, accToken
-//}

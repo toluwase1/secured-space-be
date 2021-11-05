@@ -85,7 +85,6 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
 }
-
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
 	db := postgresDB.DB.Create(&bookmarkApartment)
 	return db.Error

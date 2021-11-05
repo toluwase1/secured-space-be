@@ -43,4 +43,6 @@ func GetUserFromContext(c *gin.Context) (*models.User, error){
 		return nil, errors.New("User is not logged in")
 	}
 	return nil, errors.New("user is not logged in")
+
 }
+

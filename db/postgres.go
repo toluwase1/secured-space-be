@@ -99,9 +99,16 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 	return result.Error
 }
 
-func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error{
-	   result := postgresDB.DB.
-	   	Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
-	   	Delete(&models.BookmarkApartment{})
-	   return result.Error
+
+func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
+	result := postgresDB.DB.
+		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
+		Delete(&models.BookmarkApartment{})
+	return result.Error
+}
+
+func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
+	user := &models.User{}
+	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	return user.BookmarkedApartments, result.Error
 }

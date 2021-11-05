@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
-	"github.com/decadevs/rentals-api/router"
+	r "github.com/decadevs/rentals-api/router"
 	"github.com/decadevs/rentals-api/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/mock/gomock"
@@ -38,7 +38,7 @@ func TestServer_SaveBookmarkApartment(t *testing.T) {
 
 	s := &Server{
 		DB:     m,
-		Router: router.NewRouter(),
+		Router: r.NewRouter(),
 	}
 
 	router := s.setupRouter()

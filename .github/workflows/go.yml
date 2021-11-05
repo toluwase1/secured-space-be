@@ -79,4 +79,3 @@ jobs:
         heroku_app_name:  "rentals-api"
         heroku_email: ${{secrets.TAMBARIE_EMAIL}}
 
-

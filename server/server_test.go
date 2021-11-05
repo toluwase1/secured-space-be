@@ -101,7 +101,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	}
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
@@ -111,6 +110,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
+
 
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
@@ -251,5 +251,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		assert.Equal(t, http.StatusCreated, w.Code)
 		assert.Contains(t, w.Body.String(), "signup successful")
 	})
+
 }
 
+	

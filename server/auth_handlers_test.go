@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
-	"github.com/decadevs/rentals-api/router"
+	router2 "github.com/decadevs/rentals-api/router"
 	"github.com/decadevs/rentals-api/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/golang/mock/gomock"
@@ -23,7 +23,7 @@ func TestApplication_HandleLogout(t *testing.T) {
 
 	s := &Server{
 		DB:     m,
-		Router: router.NewRouter(),
+		Router: router2.NewRouter(),
 	}
 	router := s.setupRouter()
 	user := &models.User{

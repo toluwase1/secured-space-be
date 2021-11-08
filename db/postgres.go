@@ -56,7 +56,8 @@ func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil
 }
 func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error {
-	return nil
+	result := postgresDB.DB.Create(blacklist)
+	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
 	return false

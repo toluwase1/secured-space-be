@@ -23,6 +23,7 @@ type DB interface {
 	UpdateApartment(apartment *models.Apartment, apartmentID string) error
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
+	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
 	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error

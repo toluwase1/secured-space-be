@@ -34,6 +34,7 @@ func uploadFileToS3(s *session.Session, file multipart.File, fileName string, si
 	})
 	return err
 }
+
 func GetUserFromContext(c *gin.Context) (*models.User, error){
 	if userI, exists := c.Get("user"); exists {
 		if user, ok := userI.(*models.User); ok {
@@ -42,4 +43,6 @@ func GetUserFromContext(c *gin.Context) (*models.User, error){
 		return nil, errors.New("User is not logged in")
 	}
 	return nil, errors.New("user is not logged in")
+
 }
+

@@ -114,7 +114,7 @@ func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.A
 	return user.BookmarkedApartments, result.Error
 }
 
-func (PostgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
-	result := PostgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
+func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
+	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
     return result.Error
 }

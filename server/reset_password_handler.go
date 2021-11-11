@@ -19,10 +19,6 @@ func (s *Server) ResetPassword() gin.HandlerFunc {
 			return
 		}
 		userID := c.Param("userID")
-		if userID == "" {
-            response.JSON(c, "", http.StatusBadRequest, nil, []string{"user id is required"})
-            return
-        }
 		hashedPassword, err := services.GenerateHashPassword(resetPassword.Password)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())

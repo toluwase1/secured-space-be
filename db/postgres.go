@@ -113,3 +113,8 @@ func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.A
 	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
+
+func (PostgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
+	result := PostgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("password", NewPassword)
+    return result.Error
+}

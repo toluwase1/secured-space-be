@@ -28,6 +28,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/auth/signup_tenant", s.handleSignupTenant())
 	apirouter.POST("/auth/signup_agent", s.handleSignupAgent())
 	apirouter.POST("/auth/login", s.handleLogin())
+	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))

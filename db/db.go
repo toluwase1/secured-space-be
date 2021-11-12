@@ -23,6 +23,7 @@ type DB interface {
 	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
+	ResetPassword(userID, NewPassword string) error
 }
 
 // ValidationError defines error that occur due to validation

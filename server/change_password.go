@@ -19,12 +19,12 @@ func (s *Server) ChangePassword() gin.HandlerFunc {
 			NewPassword string `json:"new_password" binding:"required"`
 		}{}
 		if errs := s.decode(c, &passwordInfo); errs != nil {
-			response.JSON(c, "", http.StatusInternalServerError, nil, errs)
+			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
 		err = services.CompareHashAndPassword([]byte(passwordInfo.OldPassword), user.HashedPassword)
 		if err != nil {
-			response.JSON(c, "", http.StatusBadRequest, nil, []string{"Incorrect Password"})
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{"Incorrect Password Details"})
 			return
 		}
 		hashedPassword, err := services.GenerateHashPassword(passwordInfo.NewPassword)

@@ -26,7 +26,7 @@ func AuthorizeTestRoutes(m *db.MockDB, t *testing.T) *string {
 		t.Fail()
 	}
 
-	user := &models.User{Email: "adebayo@gmail.com"}
+	user := &models.User{Email: "adebayo@gmail.com", HashedPassword: "$2a$10$dP0JsmQr4ycXj8MQJVaDkedmOA2owa7lAOKUqOmwEN3IbDOfkLROy"}
 	user.ID = "1234567asdf"
 	m.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
 	m.EXPECT().TokenInBlacklist(accToken).Return(false)

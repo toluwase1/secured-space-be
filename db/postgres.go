@@ -32,13 +32,6 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	//err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
-	//
-	//if err != nil {
-	//	log.Panicln(err.Error())
-	//
-	//}
-
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {

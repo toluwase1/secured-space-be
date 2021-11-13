@@ -26,6 +26,7 @@ func AuthorizeTestRoutes(m *db.MockDB, t *testing.T) *string {
 		t.Fail()
 	}
 
+	// "password" was hashed to form the hashedPassword data, and it is for testing purpose
 	user := &models.User{Email: "adebayo@gmail.com", HashedPassword: "$2a$10$dP0JsmQr4ycXj8MQJVaDkedmOA2owa7lAOKUqOmwEN3IbDOfkLROy"}
 	user.ID = "1234567asdf"
 	m.EXPECT().FindUserByEmail(user.Email).Return(user, nil)

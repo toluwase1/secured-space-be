@@ -27,6 +27,8 @@ type DB interface {
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
 	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error
+	ResetPassword(userID, NewPassword string) error
+	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)
 }
 
 // ValidationError defines error that occur due to validation

@@ -39,13 +39,6 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	//err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
-	//
-	//if err != nil {
-	//	log.Panicln(err.Error())
-	//
-	//}
-
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -141,4 +134,14 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
 	return err
+}
+func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
+	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
+    return result.Error
+}
+
+func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
+    var apartments []models.Apartment
+    result := postgresDB.DB.Where(fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)).Find(&apartments)
+    return apartments, result.Error
 }

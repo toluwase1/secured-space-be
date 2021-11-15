@@ -31,7 +31,6 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
-
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {

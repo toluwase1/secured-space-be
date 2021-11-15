@@ -114,6 +114,13 @@ func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 
 func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
     var apartments []models.Apartment
-    result := postgresDB.DB.Where(fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)).Find(&apartments)
+	stm := ""
+	if noOfRooms != "" {
+		stm = fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)
+	}else {
+		stm = fmt.Sprintf("((price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, maxPrice, categoryID, location)
+	}
+    // result := postgresDB.DB.Where(stm ).Find(&apartments)
+	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
     return apartments, result.Error
 }

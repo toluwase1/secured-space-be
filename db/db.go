@@ -13,7 +13,7 @@ type DB interface {
 	CreateUser(user *models.User) (*models.User, error)
 	FindUserByUsername(username string) (*models.User, error)
 	FindUserByEmail(email string) (*models.User, error)
-	UpdateUser(user *models.User) error
+	UpdateUser(id string, update *models.UpdateUser) error
 	AddToBlackList(blacklist *models.Blacklist) error
 	TokenInBlacklist(token *string) bool
 	FindUserByPhone(phone string) (*models.User, error)

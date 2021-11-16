@@ -22,11 +22,13 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
 				response.JSON(c, "user details retrieved correctly", http.StatusOK, gin.H{
-					"email":      user.Email,
-					"phone":      user.Phone1,
 					"first_name": user.FirstName,
 					"last_name":  user.LastName,
+					"email":      user.Email,
+					"phone":      user.Phone1,
 					"image":      user.Image,
+					"phone2":     user.Phone2,
+					"role":       user.RoleID,
 				}, nil)
 				return
 			}
@@ -38,11 +40,13 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 
 func (s *Server) handleUpdateUserDetails() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
-
+				var update models.UpdateUser
 				email := user.Email
-				if errs := s.decode(c, user); errs != nil {
+				log.Println(user)
+				if errs := s.decode(c, &update); errs != nil {
 					response.JSON(c, "", http.StatusBadRequest, nil, errs)
 					return
 				}
@@ -50,7 +54,7 @@ func (s *Server) handleUpdateUserDetails() gin.HandlerFunc {
 				//TODO try to eliminate this
 				user.Email = email
 				user.UpdatedAt = time.Now()
-				if err := s.DB.UpdateUser(user); err != nil {
+				if err := s.DB.UpdateUser(user.ID, &update); err != nil {
 					log.Printf("update user error : %v\n", err)
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 					return

@@ -111,7 +111,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
 
-
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -253,5 +252,3 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	})
 
 }
-
-	

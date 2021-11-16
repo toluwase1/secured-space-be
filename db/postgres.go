@@ -52,8 +52,21 @@ func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 	return user, userEmail.Error
 }
-func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
-	return nil
+func (postgresDB *PostgresDB) UpdateUser(id string, update *models.UpdateUser) error {
+	result :=
+		postgresDB.DB.Model(models.User{}).
+			Where("id = ?", id).
+			Updates(
+				models.User{
+					FirstName: update.FirstName,
+					LastName:  update.LastName,
+					Phone1:    update.Phone1,
+					Phone2:    update.Phone2,
+					Address:   update.Address,
+					Email:     update.Email,
+				},
+			)
+	return result.Error
 }
 func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error {
 	result := postgresDB.DB.Create(blacklist)
@@ -71,9 +84,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 
 func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
-
 	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
-
 	return Apartments, result.Error
 }
 
@@ -137,11 +148,11 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 }
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
-    return result.Error
+	return result.Error
 }
 
 func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
-    var apartments []models.Apartment
-    result := postgresDB.DB.Where(fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)).Find(&apartments)
-    return apartments, result.Error
+	var apartments []models.Apartment
+	result := postgresDB.DB.Where(fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)).Find(&apartments)
+	return apartments, result.Error
 }

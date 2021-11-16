@@ -10,8 +10,8 @@ import (
 
 func (s *Server) ResetPassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		resetPassword:=  struct{
-			Password	string	`json:"password" binding:"required"`
+		resetPassword := struct {
+			Password string `json:"password" binding:"required"`
 		}{}
 		errs := s.decode(c, &resetPassword)
 		if errs != nil {

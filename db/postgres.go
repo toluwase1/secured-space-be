@@ -3,17 +3,16 @@ package db
 import (
 	"bytes"
 	"fmt"
-	"log"
-	"mime/multipart"
-	"net/http"
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"os"
 )
 
 // PostgresDB implements the DB interface
@@ -84,7 +83,9 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 
 func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
+
 	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+
 	return Apartments, result.Error
 }
 
@@ -153,6 +154,15 @@ func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 
 func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
 	var apartments []models.Apartment
-	result := postgresDB.DB.Where(fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)).Find(&apartments)
+	stm := ""
+	if minPrice == "" {
+		stm = fmt.Sprintf("((price = %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	} else if noOfRooms != "" {
+		stm = fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)
+	} else {
+		stm = fmt.Sprintf("((price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, maxPrice, categoryID, location)
+
+	}
+	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error
 }

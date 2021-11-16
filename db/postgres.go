@@ -38,6 +38,20 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+	if err != nil {
+		log.Println("unable to migrate database.", err.Error())
+	}
+
+	err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
+	if err != nil {
+		log.Println("unable to create role.", err.Error())
+	}
+	err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
+	if err != nil {
+		log.Println("unable to create role.", err.Error())
+	}
+
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {

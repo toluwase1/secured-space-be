@@ -31,13 +31,15 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+
 	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+
 	if err != nil {
-		log.Println("unable to migrate database.", err.Error())
+		log.Panicln(err.Error())
+
 	}
 
 }
-
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
 	return nil, nil
@@ -48,13 +50,14 @@ func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User,
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
 	var user *models.User
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
-		return user, userEmail.Error
+	return user, userEmail.Error
 }
 func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
 	return nil
 }
 func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error {
-	return nil
+	result := postgresDB.DB.Create(blacklist)
+	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
 	return false
@@ -65,6 +68,20 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
 }
+
+func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
+	var Apartments []models.Apartment
+
+	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+
+	return Apartments, result.Error
+}
+
+func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error {
+	err := postgresDB.DB.Create(&apartment).Error
+	return err
+}
+
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
@@ -73,11 +90,30 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 	db := postgresDB.DB.Create(&bookmarkApartment)
 	return db.Error
 }
+
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
 	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
+	return result.Error
+}
+
+func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
+	result := postgresDB.DB.Table("bookmarked_apartments").
+		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
+		Delete(&models.BookmarkApartment{})
+	return result.Error
+}
+
+func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
+	user := &models.User{}
+	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
+	return user.BookmarkedApartments, result.Error
+}
+
+func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
+	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
 	return result.Error
 }

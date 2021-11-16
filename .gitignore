@@ -2,3 +2,4 @@ mock_*
 .vscode
 .idea
 *.env
+testimg.png

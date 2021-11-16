@@ -15,7 +15,7 @@ func (s *Server) SearchApartment() gin.HandlerFunc {
 		maxPrice := c.Query("max_price")
 		noOfRooms := c.Query("no_of_rooms")
 
-	    apartments, err := s.DB.SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms)
+		apartments, err := s.DB.SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Internal Server Error"})

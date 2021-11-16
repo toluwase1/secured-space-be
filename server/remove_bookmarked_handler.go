@@ -38,4 +38,3 @@ func (s *Server) RemoveBookmarkedApartment() gin.HandlerFunc {
 	}
 
 }
-

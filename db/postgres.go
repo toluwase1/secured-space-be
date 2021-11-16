@@ -41,7 +41,8 @@ func (postgresDB *PostgresDB) Init() {
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
-	return nil, nil
+	err := postgresDB.DB.Create(user).Error
+	return nil, err
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
 	return nil, nil

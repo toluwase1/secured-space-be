@@ -166,3 +166,9 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error
 }
+
+func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
+	var role models.Role
+	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
+	return role, err
+}

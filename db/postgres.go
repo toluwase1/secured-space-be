@@ -45,7 +45,9 @@ func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error
 	return nil, err
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
-	return nil, nil
+	var user models.User
+	err := postgresDB.DB.Where("username = ?", username).First(&user).Error
+	return &user, err
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
 	var user *models.User

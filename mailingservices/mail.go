@@ -45,7 +45,7 @@ func SendVerifyAccount(userEmail, link string) (string, error) {
 	}
 
 	res, _, err := mg.Send(ctx, m)
-	return res, err
+	return res, nil
 }
 
 func SendResetPassword(userEmail, link string) (string, error) {
@@ -69,5 +69,5 @@ func SendResetPassword(userEmail, link string) (string, error) {
 	}
 
 	res, _, err := mg.Send(ctx, m)
-	return res, err
+	return res, nil
 }

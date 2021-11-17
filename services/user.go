@@ -20,7 +20,7 @@ func CheckSupportedFile(filename string) (string, bool) {
 	return fileExtension, !supportedFileTypes[fileExtension]
 }
 
-func SaveFile(fileExtension string) (*session.Session, string, error) {
+func PreAWS(fileExtension string) (*session.Session, string, error) {
 	tempFileName := "profile_pics/" + bson.NewObjectId().Hex() + fileExtension
 
 	session, err := session.NewSession(&aws.Config{

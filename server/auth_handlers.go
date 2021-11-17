@@ -114,7 +114,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword([]byte(user.HashedPassword), loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(loginRequest.Password), user.HashedPassword)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email or password incorrect"})

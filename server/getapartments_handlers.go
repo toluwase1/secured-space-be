@@ -1,11 +1,12 @@
 package server
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
 )
 
 func (s *Server) handleGetUserApartments() gin.HandlerFunc {

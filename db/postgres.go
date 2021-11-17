@@ -125,6 +125,22 @@ func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.A
 	return user.BookmarkedApartments, result.Error
 }
 
+func (postgresDB *PostgresDB) GetAllInteriorFeatures() ([]models.InteriorFeature, error) {
+	interiorFeatures := []models.InteriorFeature{}
+	if err := postgresDB.DB.Find(&interiorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return interiorFeatures, nil
+}
+
+func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature, error) {
+	exteriorFeatures := []models.ExteriorFeature{}
+	if err := postgresDB.DB.Find(&exteriorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return exteriorFeatures, nil
+}
+
 func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
 	// get the file size and read
 	// the file content into a buffer
@@ -147,6 +163,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	})
 	return err
 }
+
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
 	return result.Error

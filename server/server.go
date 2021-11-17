@@ -28,6 +28,8 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/auth/signup_tenant", s.handleSignupTenant())
 	apirouter.POST("/auth/signup_agent", s.handleSignupAgent())
 	apirouter.POST("/auth/login", s.handleLogin())
+	apirouter.GET("/features/interior", s.handleGetInteriorFeatures())
+	apirouter.GET("/features/exterior", s.handleGetExteriorFeatures())
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 
@@ -78,7 +80,7 @@ func (s *Server) setupRouter() *gin.Engine {
 	// setup cors
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH"},
+		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,

@@ -1,9 +1,5 @@
 package models
 
-import (
-	"time"
-)
-
 // User holds a user details
 type User struct {
 	Models
@@ -22,12 +18,11 @@ type User struct {
 	Role                 Role
 }
 type Images struct {
-	ID          string `json:"id"`
+	Models
 	ApartmentID string `json:"apartment_id"`
+	Apartment   Apartment
 	URL         string
 	Name        string `json:"name"`
-	CreateAt    time.Time
-	UpdateAt    time.Time
 }
 type UpdateUser struct {
 	FirstName string `json:"first_name" binding:"required" form:"first_name"`

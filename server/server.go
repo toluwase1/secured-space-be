@@ -28,8 +28,13 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/auth/signup_tenant", s.handleSignupTenant())
 	apirouter.POST("/auth/signup_agent", s.handleSignupAgent())
 	apirouter.POST("/auth/login", s.handleLogin())
+<<<<<<< HEAD
 	apirouter.GET("/features/interior", s.handleGetInteriorFeatures())
 	apirouter.GET("/features/exterior", s.handleGetExteriorFeatures())
+=======
+	apirouter.POST("/reset-password/:userID", s.ResetPassword())
+	apirouter.GET("/search-apartment", s.SearchApartment())
+>>>>>>> master
 
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
@@ -39,12 +44,14 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.GET("/user-apartment", s.handleGetUserApartments())
 	authorized.PUT("/me/update", s.handleUpdateUserDetails())
 	authorized.GET("/me", s.handleShowProfile())
-
+	authorized.POST("/me/uploadpic", s.handleUploadProfilePic())
+	authorized.POST("/user/change-password", s.ChangePassword())
 	// apartment routes
 	authorized.POST("/user/apartments", s.handleCreateApartment())
 	authorized.DELETE("/user/apartment/:apartmentID/", s.DeleteApartment())
 	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
+	authorized.DELETE("/user/apartment/:apartmentID/removebookmark", s.RemoveBookmarkedApartment())
 
 }
 

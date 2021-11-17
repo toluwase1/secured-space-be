@@ -1,11 +1,17 @@
 package db
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"mime/multipart"
+	"net/http"
 	"os"
 )
 
@@ -32,13 +38,6 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
-
-	if err != nil {
-		log.Panicln(err.Error())
-
-	}
-
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -52,8 +51,21 @@ func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 	return user, userEmail.Error
 }
-func (postgresDB *PostgresDB) UpdateUser(user *models.User) error {
-	return nil
+func (postgresDB *PostgresDB) UpdateUser(id string, update *models.UpdateUser) error {
+	result :=
+		postgresDB.DB.Model(models.User{}).
+			Where("id = ?", id).
+			Updates(
+				models.User{
+					FirstName: update.FirstName,
+					LastName:  update.LastName,
+					Phone1:    update.Phone1,
+					Phone2:    update.Phone2,
+					Address:   update.Address,
+					Email:     update.Email,
+				},
+			)
+	return result.Error
 }
 func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error {
 	result := postgresDB.DB.Create(blacklist)
@@ -99,6 +111,14 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
 	return result.Error
 }
+
+func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
+	result := postgresDB.DB.
+		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
+		Delete(&models.BookmarkApartment{})
+	return result.Error
+}
+
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
 	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
@@ -119,4 +139,47 @@ func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature
 		return nil, err
 	}
 	return exteriorFeatures, nil
+}
+
+func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
+	// get the file size and read
+	// the file content into a buffer
+	buffer := make([]byte, size)
+	file.Read(buffer)
+	// config settings: this is where you choose the bucket,
+	// filename, content-type and storage class of the file
+	// you're uploading
+
+	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
+		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
+		Key:                  aws.String(fileName),
+		ACL:                  aws.String("public-read"),
+		Body:                 bytes.NewReader(buffer),
+		ContentLength:        aws.Int64(int64(size)),
+		ContentType:          aws.String(http.DetectContentType(buffer)),
+		ContentDisposition:   aws.String("attachment"),
+		ServerSideEncryption: aws.String("AES256"),
+		StorageClass:         aws.String("INTELLIGENT_TIERING"),
+	})
+	return err
+}
+
+func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
+	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
+	return result.Error
+}
+
+func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
+	var apartments []models.Apartment
+	stm := ""
+	if minPrice == "" {
+		stm = fmt.Sprintf("((price = %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	} else if noOfRooms != "" {
+		stm = fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)
+	} else {
+		stm = fmt.Sprintf("((price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, maxPrice, categoryID, location)
+
+	}
+	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
+	return apartments, result.Error
 }

@@ -83,3 +83,15 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 		return
 	}
 }
+
+func (s *Server) handleGetAllApartment() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apartments, err := s.DB.GetAllApartment()
+		if err != nil {
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "apartments fetched successfully", http.StatusOK, gin.H{"apartment": apartments}, nil)
+		return
+	}
+}

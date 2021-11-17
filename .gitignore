@@ -3,3 +3,4 @@ mock_*
 .idea
 *.env
 testimg.png
+rentals-api

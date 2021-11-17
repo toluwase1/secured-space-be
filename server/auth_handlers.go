@@ -17,7 +17,7 @@ import (
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			RoleID: 1,
+			RoleID: "1",
 			Role:   models.Role{},
 		}
 
@@ -56,7 +56,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 func (s *Server) handleSignupAgent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := &models.User{
-			RoleID: 2,
+			RoleID: "2",
 			Role:   models.Role{},
 		}
 

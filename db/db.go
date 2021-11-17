@@ -2,10 +2,9 @@ package db
 
 import (
 	"fmt"
-	"mime/multipart"
-
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/decadevs/rentals-api/models"
+	"mime/multipart"
 )
 
 // DB provides access to the different db
@@ -27,6 +26,8 @@ type DB interface {
 	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
+	GetAllInteriorFeatures() ([]models.InteriorFeature, error)
+	GetAllExteriorFeatures() ([]models.ExteriorFeature, error)
 	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error
 	ResetPassword(userID, NewPassword string) error
 	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)

@@ -109,7 +109,7 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -118,7 +118,7 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 }
 
 func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
-	result := postgresDB.DB.
+	result := postgresDB.DB.Table("bookmarked_apartments").
 		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
 		Delete(&models.BookmarkApartment{})
 	return result.Error
@@ -126,8 +126,24 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
+}
+
+func (postgresDB *PostgresDB) GetAllInteriorFeatures() ([]models.InteriorFeature, error) {
+	interiorFeatures := []models.InteriorFeature{}
+	if err := postgresDB.DB.Find(&interiorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return interiorFeatures, nil
+}
+
+func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature, error) {
+	exteriorFeatures := []models.ExteriorFeature{}
+	if err := postgresDB.DB.Find(&exteriorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return exteriorFeatures, nil
 }
 
 func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
@@ -152,6 +168,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	})
 	return err
 }
+
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
 	return result.Error

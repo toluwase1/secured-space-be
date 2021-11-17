@@ -83,3 +83,27 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 		return
 	}
 }
+
+
+func (s *Server) handleGetApartmentByID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apartmentID := c.Param("apartmentID")
+		apartment, errs := s.DB.GetApartmentByID(apartmentID)
+		if errs != nil {
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "apartment retrieved successfully", http.StatusOK, apartment, nil)
+		return
+	}
+
+	//	if err := s.DB.UpdateApartment(apartment, apartmentID); err != nil {
+	//		log.Printf("update apartment error : %v\n", err)
+	//		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+	//		return
+	//	}
+	//	response.JSON(c, "apartment updated successfully", http.StatusOK, nil, nil)
+	//	return
+	//}
+}
+

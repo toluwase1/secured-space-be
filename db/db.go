@@ -21,6 +21,7 @@ type DB interface {
 	CreateApartment(apartment *models.Apartment) error
 	DeleteApartment(ID, userID string) error
 	UpdateApartment(apartment *models.Apartment, apartmentID string) error
+	GetApartmentByID(apartmentID string) (*models.Apartment, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error

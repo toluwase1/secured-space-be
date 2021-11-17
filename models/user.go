@@ -18,7 +18,7 @@ type User struct {
 	ConfirmPassword      string      `json:"confirm_password" gorm:"-" form:"confirm_password"`
 	BookmarkedApartments []Apartment `gorm:"many2many:bookmarked_apartments"`
 	Image                string      `json:"image,omitempty"`
-	RoleID               int         `json:"role_id"`
+	RoleID               string      `json:"role_id"`
 	Role                 Role
 }
 type Images struct {

@@ -17,6 +17,7 @@ import (
 	"strings"
 	"testing"
 )
+
 func CheckAuthorize(m *db.MockDB, t *testing.T) *string {
 	accessClaims, _ := services.GenerateClaims("adebayo@gmail.com")
 
@@ -45,11 +46,11 @@ func TestApplication_ChangePassword(t *testing.T) {
 	accToken := CheckAuthorize(mockedDb, t)
 	t.Run("Test_For_Missing_Password", func(t *testing.T) {
 		passwordInfo := struct {
-			OldPassword	string `json:"old_password" binding:"required"`
+			OldPassword string `json:"old_password" binding:"required"`
 			NewPassword string `json:"new_password" binding:"required"`
 		}{
 			OldPassword: "",
-            NewPassword: "",
+			NewPassword: "",
 		}
 		body, _ := json.Marshal(passwordInfo)
 		req, err := http.NewRequest(http.MethodPost, "/api/v1/user/change-password", strings.NewReader(string(body)))
@@ -67,7 +68,7 @@ func TestApplication_ChangePassword(t *testing.T) {
 	accToken = CheckAuthorize(mockedDb, t)
 	t.Run("Test_For_Incorrect_Password", func(t *testing.T) {
 		passwordInfo := struct {
-			OldPassword	string `json:"old_password" binding:"required"`
+			OldPassword string `json:"old_password" binding:"required"`
 			NewPassword string `json:"new_password" binding:"required"`
 		}{
 			OldPassword: "password123",
@@ -91,7 +92,7 @@ func TestApplication_ChangePassword(t *testing.T) {
 	mockedDb.EXPECT().ResetPassword("1234567asdf", gomock.Any()).Return(errors.New("an error occurred"))
 	t.Run("Test_For_Password_Changed_Error", func(t *testing.T) {
 		passwordInfo := struct {
-			OldPassword	string `json:"old_password" binding:"required"`
+			OldPassword string `json:"old_password" binding:"required"`
 			NewPassword string `json:"new_password" binding:"required"`
 		}{
 			OldPassword: "password",
@@ -114,7 +115,7 @@ func TestApplication_ChangePassword(t *testing.T) {
 	mockedDb.EXPECT().ResetPassword("1234567asdf", gomock.Any()).Return(nil)
 	t.Run("Test_For_Successfully_Password_Change", func(t *testing.T) {
 		passwordInfo := struct {
-			OldPassword	string `json:"old_password" binding:"required"`
+			OldPassword string `json:"old_password" binding:"required"`
 			NewPassword string `json:"new_password" binding:"required"`
 		}{
 			OldPassword: "password",

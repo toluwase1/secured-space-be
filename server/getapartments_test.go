@@ -16,7 +16,6 @@ import (
 	"testing"
 )
 
-
 func AuthorizeTestRoute(mDB *db.MockDB, t *testing.T, email string) (*models.User, *string) {
 	accessClaims, refreshClaims := services.GenerateClaims(email)
 
@@ -56,7 +55,6 @@ func TestApplication_GetUserApartments(t *testing.T) {
 		assert.Contains(t, rw.Body.String(), "internal server error")
 	})
 
-
 	t.Run("Test_For_Successful_Response", func(t *testing.T) {
 		user, accToken := AuthorizeTestRoute(mDB, t, "tchisom@gmail.com")
 		mDB.EXPECT().GetUsersApartments(user.ID).Return(nil, nil)
@@ -69,5 +67,3 @@ func TestApplication_GetUserApartments(t *testing.T) {
 		assert.Contains(t, rw.Body.String(), "retrieved apartments successfully")
 	})
 }
-
-

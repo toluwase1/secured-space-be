@@ -59,7 +59,7 @@ func GenerateToken(signMethod *jwt.SigningMethodHMAC, claims jwt.MapClaims, secr
 }
 
 func CompareHashAndPassword(password []byte, hashedPassword string) error {
-	return bcrypt.CompareHashAndPassword(password, []byte(hashedPassword))
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), password)
 }
 
 func GenerateHashPassword(password string) ([]byte, error) {

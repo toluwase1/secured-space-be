@@ -25,7 +25,7 @@ func TestApplication_ResetPassword(t *testing.T) {
 
 	t.Run("Test_For_Missing_Password", func(t *testing.T) {
 		requestPassword := struct {
-			Password  string
+			Password string
 		}{
 			Password: "",
 		}
@@ -42,7 +42,7 @@ func TestApplication_ResetPassword(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
 	requestPassword := struct {
-		Password  string
+		Password string
 	}{
 		Password: "Password",
 	}

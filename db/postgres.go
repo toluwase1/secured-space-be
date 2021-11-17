@@ -104,3 +104,19 @@ func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.A
 	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
+
+func (postgresDB *PostgresDB) GetAllInteriorFeatures() ([]models.InteriorFeature, error) {
+	interiorFeatures := []models.InteriorFeature{}
+	if err := postgresDB.DB.Find(&interiorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return interiorFeatures, nil
+}
+
+func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature, error) {
+	exteriorFeatures := []models.ExteriorFeature{}
+	if err := postgresDB.DB.Find(&exteriorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return exteriorFeatures, nil
+}

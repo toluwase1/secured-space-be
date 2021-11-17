@@ -20,7 +20,6 @@ import (
 	"testing"
 )
 
-
 func Test_CreateApartment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockedDB := db.NewMockDB(ctrl)
@@ -68,7 +67,7 @@ func Test_CreateApartment(t *testing.T) {
 		assert.Contains(t, rw.Body.String(), "Apartment Successfully Added")
 	})
 
-	mockedDB.EXPECT().CreateApartment(apartment).Return( errors.New("error creating apartment"))
+	mockedDB.EXPECT().CreateApartment(apartment).Return(errors.New("error creating apartment"))
 	t.Run("Testing_For_Error_in_Creating_Apartment", func(t *testing.T) {
 		rw := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodPost, "/api/v1/user/apartments", strings.NewReader(string(marshalledApartment)))
@@ -77,9 +76,8 @@ func Test_CreateApartment(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, rw.Code)
 		assert.Contains(t, rw.Body.String(), "Bad Request")
-   })
+	})
 }
-
 
 func TestServer_DeleteApartment(t *testing.T) {
 	err := godotenv.Load("../.env")

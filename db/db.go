@@ -22,7 +22,8 @@ type DB interface {
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
 	GetUsersApartments(userId string) ([]models.Apartment, error)
-
+	GetAllInteriorFeatures() ([]models.InteriorFeature, error)
+	GetAllExteriorFeatures() ([]models.ExteriorFeature, error)
 }
 
 // ValidationError defines error that occur due to validation

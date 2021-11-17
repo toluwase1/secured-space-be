@@ -219,3 +219,48 @@ func TestUpdateApartment(t *testing.T) {
 
 	})
 }
+
+func TestGetAllApartment(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	mockedDB := db.NewMockDB(ctrl)
+
+	godotenv.Load("../.env")
+	s := &Server{
+		mockedDB,
+		router.NewRouter(),
+	}
+	r := s.setupRouter()
+
+	var a = []models.Apartment{
+		{
+			Title:           "2 bedrooms",
+			Description:     "Bay area lodge",
+			Price:           45000,
+			NoOfRooms:       3,
+			Furnished:       false,
+			Location:        "lagos",
+			ApartmentStatus: false,
+			Interiors:       []models.InteriorFeature{{Name: "gym"}, {Name: "fire place"}},
+			Exteriors:       []models.ExteriorFeature{{Name: "Garage"}, {Name: "pool"}},
+		},
+	}
+	mockedDB.EXPECT().GetAllApartment().Return(nil, errors.New("some error"))
+	t.Run("testing_error_getting_apartment", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/api/v1/apartments", nil)
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Contains(t, w.Body.String(), "internal server error")
+	})
+
+	t.Run("testing_for_success_getting_apartments", func(t *testing.T) {
+		mockedDB.EXPECT().GetAllApartment().Return(a, nil)
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/api/v1/apartments", nil)
+		r.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Body.String(), "apartments fetched successfully")
+	})
+}

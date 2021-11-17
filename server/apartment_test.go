@@ -155,9 +155,9 @@ func TestUpdateApartment(t *testing.T) {
 	}
 	user := &models.User{}
 	secret := os.Getenv("JWT_SECRET")
-	accessClaims, _ := services.GenerateClaims("frank@gmail.com")
+	accessClaims, _ := services.GenerateClaims("franklyn@gmail.com")
 	accToken, _ := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
-
+	log.Println(*accToken)
 	route := s.setupRouter()
 	apartment := &models.Apartment{
 		Title:           "2 bedrooms",
@@ -172,7 +172,7 @@ func TestUpdateApartment(t *testing.T) {
 	}
 
 	m.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(3)
-	m.EXPECT().FindUserByEmail("frank@gmail.com").Return(user, nil).Times(3)
+	m.EXPECT().FindUserByEmail("franklyn@gmail.com").Return(user, nil).Times(3)
 	m.EXPECT().UpdateApartment(apartment, apartmentID).Return(errors.New("error exist"))
 	m.EXPECT().UpdateApartment(apartment, apartmentID).Return(nil)
 

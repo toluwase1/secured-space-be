@@ -15,7 +15,7 @@ func (s *Server) ChangePassword() gin.HandlerFunc {
 			return
 		}
 		passwordInfo := struct {
-			OldPassword	string `json:"old_password" binding:"required"`
+			OldPassword string `json:"old_password" binding:"required"`
 			NewPassword string `json:"new_password" binding:"required"`
 		}{}
 		if errs := s.decode(c, &passwordInfo); errs != nil {
@@ -30,12 +30,12 @@ func (s *Server) ChangePassword() gin.HandlerFunc {
 		hashedPassword, err := services.GenerateHashPassword(passwordInfo.NewPassword)
 		if err != nil {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Internal Server Error"})
-            return
+			return
 		}
 		err = s.DB.ResetPassword(user.ID, string(hashedPassword))
 		if err != nil {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Internal Server Error"})
-            return
+			return
 		}
 		response.JSON(c, "Password Changed Successfully", http.StatusOK, nil, nil)
 	}

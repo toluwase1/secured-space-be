@@ -104,7 +104,7 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -113,7 +113,7 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 }
 
 func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
-	result := postgresDB.DB.
+	result := postgresDB.DB.Table("bookmarked_apartments").
 		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
 		Delete(&models.BookmarkApartment{})
 	return result.Error
@@ -121,7 +121,7 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
 

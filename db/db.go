@@ -30,6 +30,7 @@ type DB interface {
 	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error)
 	ResetPassword(userID, NewPassword string) error
 	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)
+	ApartmentDetails(apartmentID string) (*models.Apartment, error)
 	GetRoleByName(name string) (models.Role, error)
 }
 

@@ -138,6 +138,7 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 				}
 
 				file, fileHeader, err := r.FormFile("profile_picture")
+
 				if err != nil {
 
 					log.Println("error getting profile picture", err)
@@ -155,7 +156,7 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 					return
 				}
 
-				session, tempFileName, err := services.PreAWS(fileExtension)
+				session, tempFileName, err := services.PreAWS(fileExtension, "profile_picture")
 
 				if err != nil {
 					log.Printf("could not upload file: %v\n", err)
@@ -168,7 +169,7 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 					return
 				}
 
-				user.Image = os.Getenv("S3_BUCKET") + tempFileName
+				user.Image = os.Getenv("S3_BUCKET_URL") + "/" + tempFileName
 
 				response.JSON(c, "successfully created file", http.StatusOK, gin.H{
 					"imageurl": user.Image,

@@ -82,7 +82,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			return
 		}
 
-		aStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
+		apartmentStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
 		if err != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
 			return
@@ -100,7 +100,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			NoOfRooms:       numOfRooms,
 			Furnished:       furnished,
 			Location:        c.PostForm("location"),
-			ApartmentStatus: models.ApartmentStatus(aStatus),
+			ApartmentStatus: models.ApartmentStatus(apartmentStatus),
 			Interiors:       GetInteriors(interiors),
 			Exteriors:       GetExteriors(exteriors),
 			Images:          images,

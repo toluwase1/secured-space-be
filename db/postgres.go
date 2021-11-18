@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/decadevs/rentals-api/models"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -51,6 +52,43 @@ func (postgresDB *PostgresDB) Init() {
 	if err != nil {
 		log.Println("unable to create role.", err.Error())
 	}
+
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	postgresDB.DB.Create(&categories)
+
+	interiorFeatures := []models.InteriorFeature{
+		{ID: uuid.NewString() ,Name: "adsl"},
+		{ID: uuid.NewString() ,Name: "barbecue"},
+		{ID: uuid.NewString() ,Name: "panel door"},
+		{ID: uuid.NewString() ,Name: "ceramic floor"},
+		{ID: uuid.NewString() ,Name: "balcony"},
+		{ID: uuid.NewString() ,Name: "alarm"},
+		{ID: uuid.NewString() ,Name: "laminate"},
+		{ID: uuid.NewString() ,Name: "blinds"},
+		{ID: uuid.NewString() ,Name: "sauna"},
+		{ID: uuid.NewString() ,Name: "laundry room"},
+		{ID: uuid.NewString() ,Name: "video intercom"},
+		{ID: uuid.NewString() ,Name: "shower"},
+		{ID: uuid.NewString() ,Name: "dressing room"},
+		{ID: uuid.NewString() ,Name: "satin plaster"},
+		{ID: uuid.NewString() ,Name: "wallpaper"},
+	}
+	postgresDB.DB.Create(&interiorFeatures)
+
+	exteriorFeatures := []models.ExteriorFeature{
+		{ID: uuid.NewString() ,Name: "car park"},
+		{ID: uuid.NewString() ,Name: "elevator"},
+		{ID: uuid.NewString() ,Name: "tennis court"},
+		{ID: uuid.NewString() ,Name: "gym"},
+		{ID: uuid.NewString() ,Name: "garden"},
+		{ID: uuid.NewString() ,Name: "basketball court"},
+		{ID: uuid.NewString() ,Name: "thermal insulation"},
+		{ID: uuid.NewString() ,Name: "market"},
+		{ID: uuid.NewString() ,Name: "security"},
+		{ID: uuid.NewString() ,Name: "pvc"},
+		{ID: uuid.NewString() ,Name: "generator"},
+	}
+	postgresDB.DB.Create(&exteriorFeatures)
 
 }
 
@@ -158,7 +196,7 @@ func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature
 	return exteriorFeatures, nil
 }
 
-func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
+func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error) {
 	// get the file size and read
 	// the file content into a buffer
 	buffer := make([]byte, size)
@@ -166,7 +204,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	// config settings: this is where you choose the bucket,
 	// filename, content-type and storage class of the file
 	// you're uploading
-
+	url := "https://arp-rental.s3-website.eu-west-3.amazonaws.com/" + fileName
 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:                  aws.String(fileName),
@@ -178,7 +216,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		ServerSideEncryption: aws.String("AES256"),
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
-	return err
+	return url,err
 }
 
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {

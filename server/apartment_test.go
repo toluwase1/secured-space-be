@@ -219,3 +219,62 @@ func TestUpdateApartment(t *testing.T) {
 
 	})
 }
+func TestApplication_GetApartmentDetails(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	mdb := db.NewMockDB(ctrl)
+	apartmentID := "12sdfg-456hcvbn-ut78okjh"
+
+	s := &Server{
+		DB:     mdb,
+		Router: router.NewRouter(),
+	}
+
+	route := s.setupRouter()
+	apartment := &models.Apartment{
+		UserID:          "dddfehrrbb1t32447",
+		Title:           "2 bedrooms",
+		Description:     "Bay area lodge",
+		Price:           45000,
+		NoOfRooms:       3,
+		Furnished:       false,
+		Location:        "lagos",
+		ApartmentStatus: false,
+		Interiors:       []models.InteriorFeature{{Name: "gym"}, {Name: "fire place"}},
+		Exteriors:       []models.ExteriorFeature{{Name: "Garage"}, {Name: "pool"}},
+	}
+
+	mdb.EXPECT().ApartmentDetails(apartmentID).Return(nil, errors.New("error exist"))
+	mdb.EXPECT().ApartmentDetails(apartmentID).Return(nil, nil)
+
+	t.Run("testing error", func(t *testing.T) {
+
+		jsonapartment, err := json.Marshal(apartment)
+		if err != nil {
+			t.Fail()
+			return
+		}
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/v1/apartment-details/%s", apartmentID), strings.NewReader(string(jsonapartment)))
+		req.Header.Set("Content-Type", "application/json")
+		route.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Contains(t, w.Body.String(), "internal server error")
+	})
+
+	t.Run("testing if error does not exist", func(t *testing.T) {
+		jsonapartment, err := json.Marshal(apartment)
+		if err != nil {
+			t.Fail()
+			return
+		}
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", fmt.Sprintf("/api/v1/apartment-details/%s", apartmentID), strings.NewReader(string(jsonapartment)))
+		req.Header.Set("Content-Type", "application/json")
+		route.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Contains(t, w.Body.String(), "apartment retrieved successfully")
+
+	})
+}

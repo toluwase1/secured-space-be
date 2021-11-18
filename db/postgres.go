@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/decadevs/rentals-api/models"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -38,13 +39,67 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+	if err != nil {
+		log.Println("unable to migrate database.", err.Error())
+	}
+
+	err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
+	if err != nil {
+		log.Println("unable to create role.", err.Error())
+	}
+	err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
+	if err != nil {
+		log.Println("unable to create role.", err.Error())
+	}
+
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	postgresDB.DB.Create(&categories)
+
+	interiorFeatures := []models.InteriorFeature{
+		{ID: uuid.NewString() ,Name: "adsl"},
+		{ID: uuid.NewString() ,Name: "barbecue"},
+		{ID: uuid.NewString() ,Name: "panel door"},
+		{ID: uuid.NewString() ,Name: "ceramic floor"},
+		{ID: uuid.NewString() ,Name: "balcony"},
+		{ID: uuid.NewString() ,Name: "alarm"},
+		{ID: uuid.NewString() ,Name: "laminate"},
+		{ID: uuid.NewString() ,Name: "blinds"},
+		{ID: uuid.NewString() ,Name: "sauna"},
+		{ID: uuid.NewString() ,Name: "laundry room"},
+		{ID: uuid.NewString() ,Name: "video intercom"},
+		{ID: uuid.NewString() ,Name: "shower"},
+		{ID: uuid.NewString() ,Name: "dressing room"},
+		{ID: uuid.NewString() ,Name: "satin plaster"},
+		{ID: uuid.NewString() ,Name: "wallpaper"},
+	}
+	postgresDB.DB.Create(&interiorFeatures)
+
+	exteriorFeatures := []models.ExteriorFeature{
+		{ID: uuid.NewString() ,Name: "car park"},
+		{ID: uuid.NewString() ,Name: "elevator"},
+		{ID: uuid.NewString() ,Name: "tennis court"},
+		{ID: uuid.NewString() ,Name: "gym"},
+		{ID: uuid.NewString() ,Name: "garden"},
+		{ID: uuid.NewString() ,Name: "basketball court"},
+		{ID: uuid.NewString() ,Name: "thermal insulation"},
+		{ID: uuid.NewString() ,Name: "market"},
+		{ID: uuid.NewString() ,Name: "security"},
+		{ID: uuid.NewString() ,Name: "pvc"},
+		{ID: uuid.NewString() ,Name: "generator"},
+	}
+	postgresDB.DB.Create(&exteriorFeatures)
+
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
-	return nil, nil
+	err := postgresDB.DB.Create(user).Error
+	return nil, err
 }
 func (postgresDB *PostgresDB) FindUserByUsername(username string) (*models.User, error) {
-	return nil, nil
+	var user models.User
+	err := postgresDB.DB.Where("username = ?", username).First(&user).Error
+	return &user, err
 }
 func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error) {
 	var user *models.User
@@ -104,7 +159,7 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -113,7 +168,7 @@ func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apart
 }
 
 func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error {
-	result := postgresDB.DB.
+	result := postgresDB.DB.Table("bookmarked_apartments").
 		Where("user_id = ? AND apartment_id = ?", bookmarkApartment.UserID, bookmarkApartment.ApartmentID).
 		Delete(&models.BookmarkApartment{})
 	return result.Error
@@ -121,11 +176,27 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkApartment").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
 
-func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
+func (postgresDB *PostgresDB) GetAllInteriorFeatures() ([]models.InteriorFeature, error) {
+	interiorFeatures := []models.InteriorFeature{}
+	if err := postgresDB.DB.Find(&interiorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return interiorFeatures, nil
+}
+
+func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature, error) {
+	exteriorFeatures := []models.ExteriorFeature{}
+	if err := postgresDB.DB.Find(&exteriorFeatures).Error; err != nil {
+		return nil, err
+	}
+	return exteriorFeatures, nil
+}
+
+func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error) {
 	// get the file size and read
 	// the file content into a buffer
 	buffer := make([]byte, size)
@@ -133,7 +204,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	// config settings: this is where you choose the bucket,
 	// filename, content-type and storage class of the file
 	// you're uploading
-
+	url := "https://arp-rental.s3-website.eu-west-3.amazonaws.com/" + fileName
 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:                  aws.String(fileName),
@@ -145,8 +216,9 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		ServerSideEncryption: aws.String("AES256"),
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
-	return err
+	return url,err
 }
+
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 	result := postgresDB.DB.Model(models.User{}).Where("id = ?", userID).Update("hashed_password", NewPassword)
 	return result.Error
@@ -172,3 +244,10 @@ func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apar
 	result := postgersDB.DB.Where("id = ?",apartmentID).Find(&apart)
 	return apart, result.Error
 }
+
+func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
+	var role models.Role
+	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
+	return role, err
+}
+

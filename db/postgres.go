@@ -246,8 +246,15 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 	return apartments, result.Error
 }
 
+func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error){
+	var apart *models.Apartment
+	result := postgersDB.DB.Where("id = ?",apartmentID).Find(&apart)
+	return apart, result.Error
+}
+
 func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	var role models.Role
 	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
 	return role, err
 }
+

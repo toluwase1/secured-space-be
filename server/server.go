@@ -33,6 +33,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.GET("/categories", s.handleGetCategories())
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
+	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
 
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))

@@ -231,3 +231,17 @@ func (s *Server) handleGetExteriorFeatures() gin.HandlerFunc {
 		return
 	}
 }
+
+
+func (s *Server) handleGetCategories() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		//fetch the categories from database
+		categories, err := s.DB.GetAllCategory()
+		if err != nil {
+			response.JSON(c, "", http.StatusInternalServerError, nil,[]string{"could not retrieve all categories"})
+			return
+		}
+		response.JSON(c,"here are the exterior features", http.StatusOK, categories,nil)
+		return
+	}
+}

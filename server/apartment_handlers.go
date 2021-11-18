@@ -280,6 +280,20 @@ func (s *Server) handleGetApartmentByID() gin.HandlerFunc {
 	//}
 }
 
+func (s *Server) GetApartmentDetails() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apartment := c.Param("apartmentID")
+		apart, err := s.DB.ApartmentDetails(apartment)
+		if err != nil {
+			log.Printf("error retrieving apartment: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "apartment retrieved successfully", http.StatusOK, gin.H{"apartment": apart}, nil)
+    return
+  }
+}
+
 func (s *Server) handleGetInteriorFeatures() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// fetch the interior features from database
@@ -302,6 +316,20 @@ func (s *Server) handleGetExteriorFeatures() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "here are the exterior features", http.StatusOK, exteriorFeatures, nil)
+		return
+	}
+}
+
+
+func (s *Server) handleGetCategories() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		//fetch the categories from database
+		categories, err := s.DB.GetAllCategory()
+		if err != nil {
+			response.JSON(c, "", http.StatusInternalServerError, nil,[]string{"could not retrieve all categories"})
+			return
+		}
+		response.JSON(c,"here are the exterior features", http.StatusOK, categories,nil)
 		return
 	}
 }

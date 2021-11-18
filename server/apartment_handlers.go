@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -45,10 +44,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			return
 		}
 		userId := userI.(*models.User).ID
-		//if err := s.decode(c, &apartmentRequest); err != nil {
-		//	response.JSON(c, "", http.StatusBadRequest, nil, err)
-		//	return
-		//}
+
 		form, err := c.MultipartForm()
 
 		if err != nil {
@@ -59,6 +55,8 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 
 		formImages := form.File["images"]
 		images := []models.Images{}
+
+		// upload the images to aws.
 		for _, f := range formImages {
 			file, err := f.Open()
 			if err != nil {
@@ -78,7 +76,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 				log.Println("could not upload file", err)
 			}
 
-			err = s.DB.UploadFileToS3(session, file, tempFileName, f.Size)
+			url, err := s.DB.UploadFileToS3(session, file, tempFileName, f.Size)
 			if err != nil {
 				log.Println(err)
 				response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
@@ -87,7 +85,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 
 			//_ = uploadFileToS3(nil, image, "name", 12)
 			log.Printf("filename: %v", f.Filename)
-			url := os.Getenv("S3_BUCKET_URL") + "/" + tempFileName
+
 			img := models.Images{
 				URL: url,
 			}
@@ -112,7 +110,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			return
 		}
 
-		aStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
+		apartmentStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
 		if err != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
 			return
@@ -130,18 +128,18 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			NoOfRooms:       numOfRooms,
 			Furnished:       furnished,
 			Location:        c.PostForm("location"),
-			ApartmentStatus: models.ApartmentStatus(aStatus),
+			ApartmentStatus: models.ApartmentStatus(apartmentStatus),
 			Interiors:       GetInteriors(interiors),
 			Exteriors:       GetExteriors(exteriors),
 			Images:          images,
 		}
 
-		//err = s.DB.CreateApartment(&apartment)
-		//if err != nil {
-		//	response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
-		//	return
-		//}
-		// upload the image to aws.
+		err = s.DB.CreateApartment(&apartment)
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+
 		log.Println(apartment.Images)
 		response.JSON(c, "Apartment Successfully Added", http.StatusOK, apartment, nil)
 

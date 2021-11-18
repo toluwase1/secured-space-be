@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -162,14 +161,14 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 					log.Printf("could not upload file: %v\n", err)
 				}
 
-				err = s.DB.UploadFileToS3(session, file, tempFileName, fileHeader.Size)
+				url, err := s.DB.UploadFileToS3(session, file, tempFileName, fileHeader.Size)
 				if err != nil {
 					log.Println(err)
 					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
 					return
 				}
 
-				user.Image = os.Getenv("S3_BUCKET_URL") + "/" + tempFileName
+				user.Image = url
 
 				response.JSON(c, "successfully created file", http.StatusOK, gin.H{
 					"imageurl": user.Image,

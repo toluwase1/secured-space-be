@@ -133,7 +133,7 @@ func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error
 }
 func (postgresDB *PostgresDB) GetApartmentByID(apartmentID string) (*models.Apartment, error) {
 	Apartments := &models.Apartment{}
-	result := postgresDB.DB.Preload("Interiors").Where("id = ?", apartmentID).Find(&Apartments)
+	result := postgresDB.DB.Preload("Interiors").Preload("Exteriors").Preload("Images").Where("id = ?", apartmentID).Find(&Apartments)
 	return Apartments, result.Error
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {

@@ -261,6 +261,7 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 func (s *Server) handleGetApartmentByID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apartmentID := c.Param("apartmentID")
+		log.Printf("apartment id: %v", apartmentID)
 		apartment, errs := s.DB.GetApartmentByID(apartmentID)
 		if errs != nil {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})

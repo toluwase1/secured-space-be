@@ -158,7 +158,7 @@ func (postgresDB *PostgresDB) GetAllExteriorFeatures() ([]models.ExteriorFeature
 	return exteriorFeatures, nil
 }
 
-func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) error {
+func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error) {
 	// get the file size and read
 	// the file content into a buffer
 	buffer := make([]byte, size)
@@ -166,7 +166,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	// config settings: this is where you choose the bucket,
 	// filename, content-type and storage class of the file
 	// you're uploading
-
+	url := "https://arp-rental.s3-website.eu-west-3.amazonaws.com/" + fileName
 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:                  aws.String(fileName),
@@ -178,7 +178,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		ServerSideEncryption: aws.String("AES256"),
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
-	return err
+	return url, err
 }
 
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
@@ -205,4 +205,15 @@ func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	var role models.Role
 	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
 	return role, err
+}
+func (postgresDB *PostgresDB) UpdateUserImageURL(id, url string) error {
+	result :=
+		postgresDB.DB.Model(models.User{}).
+			Where("id = ?", id).
+			Updates(
+				models.User{
+					Image: url,
+				},
+			)
+	return result.Error
 }

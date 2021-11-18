@@ -166,3 +166,9 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error
 }
+
+func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error){
+	var apart *models.Apartment
+	result := postgersDB.DB.Where("id = ?",apartmentID).Find(&apart)
+	return apart, result.Error
+}

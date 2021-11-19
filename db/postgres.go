@@ -54,7 +54,7 @@ func (postgresDB *PostgresDB) Init() {
 
 	//categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
 	//postgresDB.DB.Create(&categories)
-	//
+
 	//interiorFeatures := []models.InteriorFeature{
 	//	{ID: uuid.NewString() ,Name: "adsl"},
 	//	{ID: uuid.NewString() ,Name: "barbecue"},

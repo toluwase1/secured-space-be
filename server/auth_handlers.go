@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
@@ -111,10 +112,12 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 
 		if errs := s.decode(c, loginRequest); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+			fmt.Println("here")
 			return
 		}
 		// Check if the user with that email exists
 		user, err := s.DB.FindUserByEmail(loginRequest.Email)
+
 		if err != nil {
 			if inactiveErr, ok := err.(servererrors.InActiveUserError); ok {
 				response.JSON(c, "", http.StatusBadRequest, nil, []string{inactiveErr.Error()})

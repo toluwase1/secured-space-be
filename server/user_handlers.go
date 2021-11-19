@@ -27,7 +27,8 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 					"phone":      user.Phone1,
 					"image":      user.Image,
 					"phone2":     user.Phone2,
-					"role":       user.RoleID,
+					"role":       user.Role,
+					"address":    user.Address,
 				}, nil)
 				return
 			}

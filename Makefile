@@ -11,7 +11,8 @@ mock-db:
 test: mock-db
 	GIN_MODE=test go test ./...
 
-run:
+run: |
+	gofmt -w .
 	go run main.go 
 
 build:

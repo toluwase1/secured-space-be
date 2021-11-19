@@ -1,11 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
+	"github.com/decadevs/rentals-api/services"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -46,6 +49,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		//	return
 		//}
 		form, err := c.MultipartForm()
+
 		if err != nil {
 			log.Printf("error parsing multipart form: %v", err)
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
@@ -55,9 +59,33 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 		formImages := form.File["images"]
 		images := []models.Images{}
 		for _, f := range formImages {
-			//_ = uploadFileToS3(nil, image, "name", 12)
+			file, err := f.Open()
+			if err != nil {
+
+			}
+			fileExtension, ok := services.CheckSupportedFile(strings.ToLower(f.Filename))
+			log.Printf(filepath.Ext(strings.ToLower(f.Filename)))
+			fmt.Println(fileExtension)
+			if ok {
+				log.Println(fileExtension)
+				response.JSON(c, "", http.StatusBadRequest, nil, []string{fileExtension + " image file type is not supported"})
+				return
+			}
+
+			session, tempFileName, err := services.PreAWS(fileExtension, "apartment")
+			if err != nil {
+				log.Println("could not upload file", err)
+			}
+
+			url, err := s.DB.UploadFileToS3(session, file, tempFileName, f.Size)
+			if err != nil {
+				log.Println(err)
+				response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
+				return
+			}
+
 			log.Printf("filename: %v", f.Filename)
-			url := "https://unsplash.com/photos/4ojhpgKpS68"
+
 			img := models.Images{
 				URL: url,
 			}
@@ -106,12 +134,13 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			Images:          images,
 		}
 
-		err = s.DB.CreateApartment(&apartment)
-		if err != nil {
-			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
-			return
-		}
+		//err = s.DB.CreateApartment(&apartment)
+		//if err != nil {
+		//	response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+		//	return
+		//}
 		// upload the image to aws.
+		log.Println(apartment.Images)
 		response.JSON(c, "Apartment Successfully Added", http.StatusOK, apartment, nil)
 
 	}

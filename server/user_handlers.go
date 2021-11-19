@@ -17,13 +17,8 @@ func (s *Server) handleShowProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if userI, exists := c.Get("user"); exists {
 			if user, ok := userI.(*models.User); ok {
-				response.JSON(c, "user details retrieved correctly", http.StatusOK, gin.H{
-					"email":      user.Email,
-					"phone":      user.Phone1,
-					"first_name": user.FirstName,
-					"last_name":  user.LastName,
-					"image":      user.Image,
-				}, nil)
+				response.JSON(c, "user details retrieved correctly", http.StatusOK, user,
+					nil)
 				return
 			}
 		}

@@ -48,8 +48,7 @@ func (s *Server) ForgotPassword() gin.HandlerFunc {
 		}
 		user, err := s.DB.FindUserByEmail(email.Email)
 		if err != nil {
-			log.Printf("Error: %v", err.Error())
-            response.JSON(c, "", http.StatusBadRequest, nil, []string{"email does not exist"})
+            response.JSON(c, "", http.StatusBadRequest, nil, []string{"user does not exist"})
             return
 		}
 		_, err = s.Mail.SendResetPassword(user.Email, fmt.Sprintf("http://localhost:3000/reset-password/%s", user.ID))

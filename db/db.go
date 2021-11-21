@@ -34,7 +34,11 @@ type DB interface {
 	ApartmentDetails(apartmentID string) (*models.Apartment, error)
 	GetRoleByName(name string) (models.Role, error)
 }
-
+type Mailer interface {
+	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)
+	SendVerifyAccount(userEmail, link string) (string, error)
+	SendResetPassword(userEmail, link string) (string, error)
+}
 // ValidationError defines error that occur due to validation
 type ValidationError struct {
 	Field   string `json:"field"`

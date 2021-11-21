@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/decadevs/rentals-api/services"
 	"github.com/gin-gonic/gin"
@@ -45,12 +46,18 @@ func (s *Server) ForgotPassword() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
             return
 		}
-		_, err := s.DB.FindUserByEmail(email.Email)
+		user, err := s.DB.FindUserByEmail(email.Email)
 		if err != nil {
 			log.Printf("Error: %v", err.Error())
             response.JSON(c, "", http.StatusBadRequest, nil, []string{"email does not exist"})
             return
 		}
-
+		_, err = s.Mail.SendResetPassword(user.Email, fmt.Sprintf("http://localhost:3000/reset-password/%s", user.ID))
+		if err != nil {
+			log.Printf("Error: %v", err.Error())
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Internal Server Error"})
+			return
+		}
+		response.JSON(c, "Reset Password Link Sent Successfully", http.StatusOK, nil, nil)
 	}
 }

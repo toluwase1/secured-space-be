@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/decadevs/rentals-api/mailingservices"
 	"log"
 	"os"
 
@@ -20,10 +21,12 @@ func main() {
 	}
 
 	DB := &db.PostgresDB{}
-
+	Mail := &mailingservices.Mailgun{}
 	DB.Init()
+	Mail.Init()
 	s := &server.Server{
 		DB:     DB,
+		Mail:	Mail,
 		Router: router.NewRouter(),
 	}
 	s.Start()

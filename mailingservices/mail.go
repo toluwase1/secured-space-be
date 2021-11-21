@@ -6,34 +6,35 @@ import (
 	"os"
 	"time"
 )
-
-func SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error) {
+type Mailgun struct {
+	Client *mailgun.MailgunImpl
+}
+func (mail *Mailgun) Init() {
 	domain := os.Getenv("MG_DOMAIN")
 	apiKey := os.Getenv("MG_PUBLIC_API_KEY")
+	mail.Client = mailgun.NewMailgun(domain, apiKey)
+}
+func (mail Mailgun) SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error) {
 	EmailFrom := os.Getenv("MG_EMAIL_FROM")
 
-	mg := mailgun.NewMailgun(domain, apiKey)
-	m := mg.NewMessage(EmailFrom, EmailSubject, EmailBody, UserEmail)
+	m := mail.Client.NewMessage(EmailFrom, EmailSubject, EmailBody, UserEmail)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	res, _, err := mg.Send(ctx, m)
+	res, _, err := mail.Client.Send(ctx, m)
 	if err != nil {
 		return "", err
 	}
 	return res, nil
 }
-func SendVerifyAccount(userEmail, link string) (string, error) {
-	domain := os.Getenv("MG_DOMAIN")
-	apikey := os.Getenv("MG_PUBLIC_API_KEY")
+func (mail *Mailgun) SendVerifyAccount(userEmail, link string) (string, error) {
 	EmailFrom := os.Getenv("MG_EMAIL_FROM")
 
-	mg := mailgun.NewMailgun(domain, apikey)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	m := mg.NewMessage(EmailFrom, "Verify Account", "")
+	m := mail.Client.NewMessage(EmailFrom, "Verify Account", "")
 	m.SetTemplate("verify.account")
 	if err := m.AddRecipient(userEmail); err != nil {
 		return "", err
@@ -44,20 +45,17 @@ func SendVerifyAccount(userEmail, link string) (string, error) {
 		return "", err
 	}
 
-	res, _, errr := mg.Send(ctx, m)
+	res, _, errr := mail.Client.Send(ctx, m)
 	return res, errr
 }
 
-func SendResetPassword(userEmail, link string) (string, error) {
-	domain := os.Getenv("MG_DOMAIN")
-	apikey := os.Getenv("MG_PUBLIC_API_KEY")
+func (mail *Mailgun) SendResetPassword(userEmail, link string) (string, error) {
 	EmailFrom := os.Getenv("MG_EMAIL_FROM")
 
-	mg := mailgun.NewMailgun(domain, apikey)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	m := mg.NewMessage(EmailFrom, "Reset Password", "")
+	m := mail.Client.NewMessage(EmailFrom, "Reset Password", "")
 	m.SetTemplate("reset.password")
 	if err := m.AddRecipient(userEmail); err != nil {
 		return "", err
@@ -68,7 +66,7 @@ func SendResetPassword(userEmail, link string) (string, error) {
 		return "", err
 	}
 
-	res, _, errr := mg.Send(ctx, m)
+	res, _, errr := mail.Client.Send(ctx, m)
 	if errr != nil {
 		return "", errr
 	}

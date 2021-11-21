@@ -34,3 +34,23 @@ func (s *Server) ResetPassword() gin.HandlerFunc {
 		response.JSON(c, "Password Reset Successfully", http.StatusOK, nil, nil)
 	}
 }
+
+func (s *Server) ForgotPassword() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		email := struct{
+			Email string `json:"email" binding:"required"`
+		}{}
+		errs := s.decode(c, &email)
+		if errs != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+            return
+		}
+		_, err := s.DB.FindUserByEmail(email.Email)
+		if err != nil {
+			log.Printf("Error: %v", err.Error())
+            response.JSON(c, "", http.StatusBadRequest, nil, []string{"email does not exist"})
+            return
+		}
+
+	}
+}

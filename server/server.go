@@ -20,6 +20,7 @@ import (
 // Server serves requests to DB with router
 type Server struct {
 	DB     db.DB
+	Mail   db.Mailer
 	Router *router.Router
 }
 

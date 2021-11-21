@@ -26,7 +26,7 @@ func main() {
 	Mail.Init()
 	s := &server.Server{
 		DB:     DB,
-		Mail:	Mail,
+		Mail:   Mail,
 		Router: router.NewRouter(),
 	}
 	s.Start()

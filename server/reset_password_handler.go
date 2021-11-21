@@ -38,18 +38,18 @@ func (s *Server) ResetPassword() gin.HandlerFunc {
 
 func (s *Server) ForgotPassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		email := struct{
+		email := struct {
 			Email string `json:"email" binding:"required"`
 		}{}
 		errs := s.decode(c, &email)
 		if errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
-            return
+			return
 		}
 		user, err := s.DB.FindUserByEmail(email.Email)
 		if err != nil {
-            response.JSON(c, "", http.StatusBadRequest, nil, []string{"user does not exist"})
-            return
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{"user does not exist"})
+			return
 		}
 		_, err = s.Mail.SendResetPassword(user.Email, fmt.Sprintf("http://localhost:3000/reset-password/%s", user.ID))
 		if err != nil {

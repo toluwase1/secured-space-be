@@ -6,9 +6,11 @@ import (
 	"os"
 	"time"
 )
+
 type Mailgun struct {
 	Client *mailgun.MailgunImpl
 }
+
 func (mail *Mailgun) Init() {
 	domain := os.Getenv("MG_DOMAIN")
 	apiKey := os.Getenv("MG_PUBLIC_API_KEY")

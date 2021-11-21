@@ -39,6 +39,7 @@ type Mailer interface {
 	SendVerifyAccount(userEmail, link string) (string, error)
 	SendResetPassword(userEmail, link string) (string, error)
 }
+
 // ValidationError defines error that occur due to validation
 type ValidationError struct {
 	Field   string `json:"field"`

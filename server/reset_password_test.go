@@ -84,13 +84,13 @@ func TestApplication_ForgotPassword(t *testing.T) {
 
 	s := &Server{
 		DB:     mockedDb,
-		Mail: 	mockedMail,
+		Mail:   mockedMail,
 		Router: router.NewRouter(),
 	}
 	r := s.setupRouter()
 
 	t.Run("Test-For_Empty_Email", func(t *testing.T) {
-		email := struct{
+		email := struct {
 			Email string `json:"email" binding:"required"`
 		}{
 			Email: "",
@@ -98,8 +98,8 @@ func TestApplication_ForgotPassword(t *testing.T) {
 		body, _ := json.Marshal(email)
 		req, err := http.NewRequest(http.MethodPost, "/api/v1/forgot-password", strings.NewReader(string(body)))
 		if err != nil {
-            t.Errorf("Error Creating Request: %v", err.Error())
-        }
+			t.Errorf("Error Creating Request: %v", err.Error())
+		}
 		req.Header.Set("Content-Type", "application/json")
 		res := httptest.NewRecorder()
 
@@ -107,7 +107,7 @@ func TestApplication_ForgotPassword(t *testing.T) {
 		assert.Contains(t, res.Body.String(), "validation failed on field 'Email'")
 		assert.Equal(t, http.StatusBadRequest, res.Code)
 	})
-	email := struct{
+	email := struct {
 		Email string `json:"email" binding:"required"`
 	}{
 		Email: "ade@gmail.com",

@@ -35,6 +35,8 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
 
+	apirouter.POST("/forgot-password")
+
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
 	authorized.POST("/logout", s.handleLogout())

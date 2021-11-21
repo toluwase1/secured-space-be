@@ -223,7 +223,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		ServerSideEncryption: aws.String("AES256"),
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
-	return url,err
+	return url, err
 }
 
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
@@ -246,9 +246,9 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 	return apartments, result.Error
 }
 
-func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error){
+func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error) {
 	var apart *models.Apartment
-	result := postgersDB.DB.Where("id = ?",apartmentID).Find(&apart)
+	result := postgersDB.DB.Where("id = ?", apartmentID).Find(&apart)
 	return apart, result.Error
 }
 
@@ -257,4 +257,3 @@ func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
 	return role, err
 }
-

@@ -139,7 +139,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
 
-	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+	result := postgresDB.DB.Preload("Images").Where("user_id=?", userId).Find(&Apartments)
 
 	return Apartments, result.Error
 }

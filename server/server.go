@@ -20,6 +20,7 @@ import (
 // Server serves requests to DB with router
 type Server struct {
 	DB     db.DB
+	Mail   db.Mailer
 	Router *router.Router
 }
 
@@ -30,9 +31,12 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/auth/login", s.handleLogin())
 	apirouter.GET("/features/interior", s.handleGetInteriorFeatures())
 	apirouter.GET("/features/exterior", s.handleGetExteriorFeatures())
+	apirouter.GET("/categories", s.handleGetCategories())
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
+
+	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))

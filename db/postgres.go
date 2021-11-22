@@ -127,7 +127,8 @@ func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error 
 	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
-	return false
+	result := postgresDB.DB.Where("token = ?", token).Find(&models.Blacklist{})
+	return result.Error != nil
 }
 func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error) {
 	return nil, nil

@@ -15,7 +15,7 @@ type User struct {
 	BookmarkedApartments []Apartment `gorm:"many2many:bookmarked_apartments" json:"bookmarked_apartments,omitempty"`
 	Image                string      `json:"image,omitempty"`
 	RoleID               string      `json:"role_id"`
-	Role                 Role
+	Role                 Role		 `json:"role"`
 }
 type Images struct {
 	Models

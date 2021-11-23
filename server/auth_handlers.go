@@ -16,16 +16,21 @@ import (
 
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		role, err := s.DB.GetRoleByName("tenant")
+		if err != nil {
+			log.Println(err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Cannot find role id"})
+			return
+		}
 		user := &models.User{
-			RoleID: 1,
-			Role:   models.Role{},
+			RoleID: role.ID,
+			Role:   role,
 		}
 
 		if errs := s.decode(c, user); errs != nil {
-			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+			response.JSON(c, "Cannot decode user signup request", http.StatusBadRequest, nil, errs)
 			return
 		}
-		var err error
 		HashedPassword, err := services.GenerateHashPassword(user.Password)
 		user.HashedPassword = string(HashedPassword)
 		if err != nil {
@@ -55,16 +60,21 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 
 func (s *Server) handleSignupAgent() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		role, err := s.DB.GetRoleByName("agent")
+		if err != nil {
+			log.Println(err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Cannot find role id"})
+			return
+		}
 		user := &models.User{
-			RoleID: 2,
-			Role:   models.Role{},
+			RoleID: role.ID,
+			Role:   role,
 		}
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
 		}
-		var err error
 		HashedPassword, err := services.GenerateHashPassword(user.Password)
 		user.HashedPassword = string(HashedPassword)
 		if err != nil {
@@ -114,7 +124,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
-		err = services.CompareHashAndPassword([]byte(user.HashedPassword), loginRequest.Password)
+		err = services.CompareHashAndPassword([]byte(loginRequest.Password), user.HashedPassword)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email or password incorrect"})

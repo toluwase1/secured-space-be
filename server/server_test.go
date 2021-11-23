@@ -25,19 +25,30 @@ func TestSignupWithInCorrectDetailsTenant(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+
+
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "tenant",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
 		Password:  "password",
 		Email:     "spankie_signup",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
+	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
 
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
 		return
 	}
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
@@ -57,6 +68,11 @@ func TestSignupIfEmailExistsTenant(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "tenant",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
@@ -64,8 +80,11 @@ func TestSignupIfEmailExistsTenant(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
 
+	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
 	m.EXPECT().FindUserByEmail(gomock.Any()).Return(&user, nil)
 
 	jsonuser, err := json.Marshal(user)
@@ -91,6 +110,12 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "tenant",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
@@ -98,10 +123,12 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
 
+	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
-
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
 		t.Fail()
@@ -112,6 +139,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
 
+	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if tenant_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -120,18 +148,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Contains(t, w.Body.String(), "User email already exists")
-	})
-
-	m.EXPECT().FindUserByEmail(user.Email).Return(&user, errors.New("no record found in database"))
-	m.EXPECT().CreateUser(gomock.Any()).Return(nil, nil)
-	t.Run("If email does not exist in the database", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_tenant", strings.NewReader(string(jsonuser)))
-		r.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusCreated, w.Code)
-		assert.Contains(t, w.Body.String(), "signup successful")
-
 	})
 
 }
@@ -146,13 +162,23 @@ func TestSignupWithInCorrectDetailsAgent(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "agent",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
 		Password:  "password",
 		Email:     "spankie_signup",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
+
+	m.EXPECT().GetRoleByName("agent").Return(role, nil)
+
 
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
@@ -178,6 +204,11 @@ func TestSignupIfEmailExistsAgent(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "agent",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
@@ -185,8 +216,11 @@ func TestSignupIfEmailExistsAgent(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
 
+	m.EXPECT().GetRoleByName("agent").Return(role, nil)
 	m.EXPECT().FindUserByEmail(gomock.Any()).Return(&user, nil)
 
 	jsonuser, err := json.Marshal(user)
@@ -212,6 +246,11 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	}
 	r := s.setupRouter()
 
+	role := models.Role{
+		Models: models.Models{},
+		Title:  "agent",
+	}
+
 	user := models.User{
 		FirstName: "Spankie",
 		LastName:  "Dee",
@@ -219,8 +258,11 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
+		RoleID: role.ID,
+		Role: role,
 	}
 
+	m.EXPECT().GetRoleByName("agent").Return(role, nil)
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
@@ -231,6 +273,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
 	r.ServeHTTP(w, req)
 
+	m.EXPECT().GetRoleByName("agent").Return(role, nil)
 	m.EXPECT().FindUserByEmail(user.Email).Return(&user, nil)
 	t.Run("check if user_email exists in the database", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -241,14 +284,5 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "User email already exists")
 	})
 
-	m.EXPECT().FindUserByEmail(user.Email).Return(&user, errors.New("no record found in database"))
-	m.EXPECT().CreateUser(gomock.Any()).Return(nil, nil)
-	t.Run("If email does not exist in the database", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/api/v1/auth/signup_agent", strings.NewReader(string(jsonuser)))
-		r.ServeHTTP(w, req)
 
-		assert.Equal(t, http.StatusCreated, w.Code)
-		assert.Contains(t, w.Body.String(), "signup successful")
-	})
 }

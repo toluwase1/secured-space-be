@@ -2,7 +2,9 @@ package db
 
 import (
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/decadevs/rentals-api/models"
+	"mime/multipart"
 )
 
 // DB provides access to the different db
@@ -10,7 +12,7 @@ type DB interface {
 	CreateUser(user *models.User) (*models.User, error)
 	FindUserByUsername(username string) (*models.User, error)
 	FindUserByEmail(email string) (*models.User, error)
-	UpdateUser(user *models.User) error
+	UpdateUser(id string, update *models.UpdateUser) error
 	AddToBlackList(blacklist *models.Blacklist) error
 	TokenInBlacklist(token *string) bool
 	FindUserByPhone(phone string) (*models.User, error)
@@ -20,6 +22,17 @@ type DB interface {
 	UpdateApartment(apartment *models.Apartment, apartmentID string) error
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
+	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
+	GetBookmarkedApartments(userID string) ([]models.Apartment, error)
+	GetUsersApartments(userId string) ([]models.Apartment, error)
+	GetAllInteriorFeatures() ([]models.InteriorFeature, error)
+	GetAllExteriorFeatures() ([]models.ExteriorFeature, error)
+	GetAllCategory() ([]models.Category, error)
+	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error)
+	ResetPassword(userID, NewPassword string) error
+	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)
+	ApartmentDetails(apartmentID string) (*models.Apartment, error)
+	GetRoleByName(name string) (models.Role, error)
 }
 
 // ValidationError defines error that occur due to validation

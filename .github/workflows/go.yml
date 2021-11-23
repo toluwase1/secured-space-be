@@ -5,48 +5,44 @@ on:
     branches: [ master, staging ]
   pull_request:
     branches: [ master, staging ]
-
 env:
   JWT_SECRET: ${{secrets.JWT_SECRET}}
+
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.14
+        id: go
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.14
-      id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+          if [ -f Gopkg.toml ]; then
+              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+              dep ensure
+          fi
 
-    - name: Get dependencies
-      run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+      - name: Build
+        run: go build -v .
 
-    - name: Build
-      run: go build -v .
+      - name: Test
+        run: |
+          go get github.com/golang/mock/mockgen
+          make mock-db
+          go test -v ./...
 
-    - name: Test
-      run: |
-        go get github.com/golang/mock/mockgen
-        make mock-db
-        go test -v ./...
-
-    - uses: akhileshns/heroku-deploy@v3.12.12
-      if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name:  "rentals-api"
-        heroku_email: ${{secrets.TAMBARIE_EMAIL}}
-
-
-
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name:  "rentals-api"
+          heroku_email: ${{secrets.TAMBARIE_EMAIL}}

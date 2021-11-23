@@ -20,8 +20,8 @@ func CheckSupportedFile(filename string) (string, bool) {
 	return fileExtension, !supportedFileTypes[fileExtension]
 }
 
-func SaveFile(fileExtension string) (*session.Session, string, error) {
-	tempFileName := "profile_pics/" + bson.NewObjectId().Hex() + fileExtension
+func PreAWS(fileExtension, folder string) (*session.Session, string, error) {
+	tempFileName := folder + "/" + bson.NewObjectId().Hex() + fileExtension
 
 	session, err := session.NewSession(&aws.Config{
 		Region: aws.String(os.Getenv("AWS_REGION")),
@@ -34,3 +34,28 @@ func SaveFile(fileExtension string) (*session.Session, string, error) {
 
 	return session, tempFileName, err
 }
+
+//func HandleFileUpload(file *multipart.File, header multipart.FileHeader) (string,error){
+//	fileExtension, ok := CheckSupportedFile(strings.ToLower(header.Filename))
+//	log.Printf(filepath.Ext(strings.ToLower(header.Filename)))
+//	fmt.Println(fileExtension)
+//	if ok {
+//		log.Println(fileExtension)
+//		response.JSON(c, "", http.StatusBadRequest, nil, []string{fileExtension + " image file type is not supported"})
+//		return
+//	}
+//
+//	session, tempFileName, err := PreAWS(fileExtension)
+//
+//	if err != nil {
+//		log.Printf("could not upload file: %v\n", err)
+//	}
+//
+//	err = DB.UploadFileToS3(session, file, tempFileName, fileHeader.Size)
+//	if err != nil {
+//		log.Println(err)
+//		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
+//		return
+//	}
+//	return "", nil
+//}

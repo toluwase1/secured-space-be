@@ -234,13 +234,23 @@ func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
 	var apartments []models.Apartment
 	stm := ""
-	if minPrice == "" {
-		stm = fmt.Sprintf("((price = %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	if minPrice == "" && maxPrice == "" {
+		stm = fmt.Sprintf("(category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", categoryID, location)
 	} else if noOfRooms != "" {
 		stm = fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)
+	} else if minPrice != "" {
+		stm = fmt.Sprintf("(( price >= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, categoryID, location)
+	} else if maxPrice != "" {
+		stm = fmt.Sprintf("(( price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	} else if location != "0" {
+		stm = fmt.Sprintf("(location LIKE '%%%s%%')", location)
+	} else if categoryID != "0" {
+		stm = fmt.Sprintf("(category_id LIKE '%%%s%%')", categoryID)
+	} else if categoryID == "0" && location == "0" && minPrice == "" && maxPrice == "" {
+		result := postgresDB.DB.Preload("Images").Find(&apartments)
+		return apartments, result.Error
 	} else {
 		stm = fmt.Sprintf("((price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, maxPrice, categoryID, location)
-
 	}
 	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error

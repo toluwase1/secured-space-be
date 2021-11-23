@@ -15,13 +15,13 @@ type User struct {
 	BookmarkedApartments []Apartment `gorm:"many2many:bookmarked_apartments" json:"bookmarked_apartments,omitempty"`
 	Image                string      `json:"image,omitempty"`
 	RoleID               string      `json:"role_id"`
-	Role                 Role
+	Role                 Role		 `json:"role"`
 }
 type Images struct {
 	Models
 	ApartmentID string    `json:"apartment_id"`
-	Apartment   Apartment `json:"image"`
-	URL         string    `json:"image"`
+	Apartment   Apartment
+	URL         string    `json:"url"`
 	Name        string    `json:"name"`
 }
 type UpdateUser struct {

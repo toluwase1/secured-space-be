@@ -16,6 +16,7 @@ type User struct {
 	Image                string      `json:"image,omitempty"`
 	RoleID               string      `json:"role_id"`
 	Role                 Role
+
 }
 type Images struct {
 	Models

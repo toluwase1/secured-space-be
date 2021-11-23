@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/pusher/pusher-http-go"
 	"io/ioutil"
@@ -73,6 +74,32 @@ func (s *Server) registerNewUser() gin.HandlerFunc{
 	}
 
 }
+func (s *Server) CreateChat() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		body, err := ioutil.ReadAll(c.Request.Body)
+
+		if err != nil {
+			panic(err)
+		}
+
+		chat := struct {
+            ChannelName string `json:"channel_name"`
+			InitiatedBy string `json:"initiated_by"`
+			ChatWith string `json:"chat_with"`
+        }{}
+		err = json.Unmarshal(body, &chat)
+
+		if err != nil {
+			panic(err)
+		}
+		client := NewChat()
+		client.Client.Trigger(fmt.Sprintf("private-notification-%s", chat.InitiatedBy), "one-to-one-chat-request", chat)
+		client.Client.Trigger(fmt.Sprintf("private-notification-%s", chat.ChatWith), "one-to-one-chat-request", chat)
+
+		c.JSON(200, chat)
+	}
+
+}
 func (s *Server) pusherAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := NewChat()
@@ -88,6 +115,8 @@ func (s *Server) pusherAuth() gin.HandlerFunc {
 	}
 
 }
+
+
 
 func (s *Server) SendNewMessage() gin.HandlerFunc {
     return func(c *gin.Context) {

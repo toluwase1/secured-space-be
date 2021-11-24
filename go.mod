@@ -1,6 +1,7 @@
 module github.com/decadevs/rentals-api
 
-go 1.14
+// +heroku goVersion go1.17
+go 1.17
 
 require (
 	github.com/aws/aws-sdk-go v1.42.9

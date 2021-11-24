@@ -52,7 +52,7 @@ func (postgresDB *PostgresDB) Init() {
 		log.Println("unable to create role.", err.Error())
 	}
 
-	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"}, {Name: "penthouse"}, {Name: "semi-detached"}, {Name: "maisonette"}, {Name: "duplex"}}
 	postgresDB.DB.Create(&categories)
 
 	//interiorFeatures := []models.InteriorFeature{
@@ -154,12 +154,12 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	return result.Error
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	db := postgresDB.DB.Create(&bookmarkApartment)
+	db := postgresDB.DB.Table("bookmarked_apartments").Create(&bookmarkApartment)
 	return db.Error
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Table("bookmark_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -176,7 +176,7 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments.Images").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
 

@@ -30,8 +30,13 @@ func (postgresDB *PostgresDB) Init() {
 	DBPort := os.Getenv("DB_PORT")
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")
-
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
+	var dsn string
+	databaseUrl := os.Getenv("DATABASE_URL")
+	if databaseUrl == "" {
+		dsn = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
+	} else {
+		dsn = databaseUrl
+	}
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)

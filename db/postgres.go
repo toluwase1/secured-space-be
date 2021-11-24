@@ -265,3 +265,15 @@ func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
 	return role, err
 }
+
+func (PostgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
+	var apartments []models.Apartment
+	PostgresDB.DB.Preload("Images").Where("category_id = ?", categoryID).Find(&apartments)
+	return apartments
+}
+
+func (PostgresDB *PostgresDB) GetAllCategories() []models.Category {
+	var categories []models.Category
+	PostgresDB.DB.Find(&categories)
+	return categories
+}

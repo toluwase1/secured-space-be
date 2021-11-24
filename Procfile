@@ -1,1 +1,1 @@
-web: bin/go-auth
+web: bin/rentals-api

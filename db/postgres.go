@@ -43,7 +43,7 @@ func (postgresDB *PostgresDB) Init() {
 	}
 	postgresDB.DB = db
 
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{}, &models.Blacklist{})
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
@@ -57,9 +57,9 @@ func (postgresDB *PostgresDB) Init() {
 		log.Println("unable to create role.", err.Error())
 	}
 
-	//categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
-	//postgresDB.DB.Create(&categories)
-	//
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	postgresDB.DB.Create(&categories)
+
 	//interiorFeatures := []models.InteriorFeature{
 	//	{ID: uuid.NewString() ,Name: "adsl"},
 	//	{ID: uuid.NewString() ,Name: "barbecue"},
@@ -131,7 +131,8 @@ func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error 
 	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
-	return false
+	result := postgresDB.DB.Where("token = ?", token).Find(&models.Blacklist{})
+	return result.Error != nil
 }
 func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error) {
 	return nil, nil
@@ -143,7 +144,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
 
-	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+	result := postgresDB.DB.Preload("Images").Preload("User").Where("user_id=?", userId).Find(&Apartments)
 
 	return Apartments, result.Error
 }
@@ -163,7 +164,7 @@ func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.Bo
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmark_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -253,7 +254,7 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 
 func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error) {
 	var apart *models.Apartment
-	result := postgersDB.DB.Where("id = ?", apartmentID).Find(&apart)
+	result := postgersDB.DB.Preload("Images").Preload("User").Preload("Exteriors").Preload("Interiors").Where("id = ?", apartmentID).Find(&apart)
 	return apart, result.Error
 }
 

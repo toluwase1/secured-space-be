@@ -20,8 +20,8 @@ type User struct {
 type Images struct {
 	Models
 	ApartmentID string    `json:"apartment_id"`
-	Apartment   Apartment `json:"image"`
-	URL         string    `json:"image"`
+	Apartment   Apartment
+	URL         string    `json:"url"`
 	Name        string    `json:"name"`
 }
 type UpdateUser struct {

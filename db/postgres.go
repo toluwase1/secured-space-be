@@ -219,7 +219,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	// config settings: this is where you choose the bucket,
 	// filename, content-type and storage class of the file
 	// you're uploading
-	url := "https://arp-rental.s3-website.eu-west-3.amazonaws.com/" + fileName
+	url := "https://s3-eu-west-3.amazonaws.com/arp-rental/" + fileName
 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:                  aws.String(fileName),

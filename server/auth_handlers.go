@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/decadevs/rentals-api/db"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/decadevs/rentals-api/server/response"
@@ -44,7 +45,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 
-		_, err = s.DB.CreateUser(user)
+		tenantDetails, err := s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -55,6 +56,13 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
+
+		_, err = s.Mail.SendVerifyAccount(tenantDetails.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",tenantDetails.ID))
+		if err != nil{
+			log.Printf("Error: %v", err.Error())
+			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+		}
+		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
 	}
 }
 
@@ -87,7 +95,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
-		_, err = s.DB.CreateUser(user)
+		userDatails, err := s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -98,6 +106,13 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
+
+		_, err = s.Mail.SendVerifyAccount(userDatails.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",userDatails.ID))
+		if err != nil{
+			log.Printf("Error: %v", err.Error())
+			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+		}
+		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
 	}
 }
 

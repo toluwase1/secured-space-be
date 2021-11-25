@@ -35,7 +35,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
-	apirouter.POST("/verify-email/:userID",s.VerifyEmail())
+	apirouter.GET("/verify-email/:userID",s.VerifyEmail())
 	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")

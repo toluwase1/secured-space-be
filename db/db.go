@@ -28,6 +28,8 @@ type DB interface {
 	GetAllInteriorFeatures() ([]models.InteriorFeature, error)
 	GetAllExteriorFeatures() ([]models.ExteriorFeature, error)
 	GetAllCategory() ([]models.Category, error)
+	GetApartmentByCategory(categoryID string) []models.Apartment
+	GetAllCategories() []models.Category
 	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error)
 	ResetPassword(userID, NewPassword string) error
 	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)

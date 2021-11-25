@@ -112,6 +112,18 @@ func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 	return user, userEmail.Error
 }
+
+func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
+	var user *models.User
+	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
+	return user, err
+}
+
+func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
+	var user *models.User
+	err := postgresDB.DB.Model(&user).Where("id = ?", userID).Update("is_active", true).Error
+	return err
+}
 func (postgresDB *PostgresDB) UpdateUser(id string, update *models.UpdateUser) error {
 	result :=
 		postgresDB.DB.Model(models.User{}).

@@ -36,7 +36,7 @@ func (mail *Mailgun) SendVerifyAccount(userEmail, link string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	m := mail.Client.NewMessage(EmailFrom, "Verify Account", "Click on the link to verify your email")
+	m := mail.Client.NewMessage(EmailFrom, "Verify Account", "")
 	m.SetTemplate("verify.account")
 	if err := m.AddRecipient(userEmail); err != nil {
 		return "", err

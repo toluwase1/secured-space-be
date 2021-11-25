@@ -33,6 +33,9 @@ type DB interface {
 	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)
 	ApartmentDetails(apartmentID string) (*models.Apartment, error)
 	GetRoleByName(name string) (models.Role, error)
+	FindUserByID(userID string) (*models.User, error)
+	SetUserToActive(userID string)  error
+
 }
 type Mailer interface {
 	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)

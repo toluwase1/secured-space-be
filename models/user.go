@@ -20,10 +20,12 @@ type User struct {
 }
 type Images struct {
 	Models
+
 	ApartmentID string    `json:"apartment_id"`
 	Apartment   Apartment
 	URL         string    `json:"url"`
 	Name        string    `json:"name"`
+
 }
 type UpdateUser struct {
 	FirstName string `json:"first_name" binding:"required" form:"first_name"`

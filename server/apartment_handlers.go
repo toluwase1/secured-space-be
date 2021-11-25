@@ -244,3 +244,14 @@ func (s *Server) handleGetCategories() gin.HandlerFunc {
 		return
 	}
 }
+
+func (s *Server) GetAllApartments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		res := make(map[string][]models.Apartment)
+		categories := s.DB.GetAllCategories()
+		for _, category := range categories {
+			res[category.Name] = s.DB.GetApartmentByCategory(category.ID)
+		}
+		response.JSON(c, "", http.StatusOK, res, nil)
+	}
+}

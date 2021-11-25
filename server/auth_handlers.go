@@ -96,7 +96,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
 			return
 		}
-		userDatails, err := s.DB.CreateUser(user)
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -108,7 +108,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
-		_, err = s.Mail.SendVerifyAccount(userDatails.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",userDatails.ID))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",user.ID))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})

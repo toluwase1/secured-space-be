@@ -109,7 +109,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
 		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",user.ID))
-		if err != nil{:
+		if err != nil{
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
 		}

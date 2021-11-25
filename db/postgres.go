@@ -60,40 +60,40 @@ func (postgresDB *PostgresDB) PopulateTables() {
 		log.Println("unable to create role.", err.Error())
 	}
 
-	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"}, {Name: "penthouse"}, {Name: "semi-detached"}, {Name: "maisonette"}, {Name: "duplex"}}
 	postgresDB.DB.Create(&categories)
 
 	interiorFeatures := []models.InteriorFeature{
-		{ID: uuid.NewString() ,Name: "adsl"},
-		{ID: uuid.NewString() ,Name: "barbecue"},
-		{ID: uuid.NewString() ,Name: "panel door"},
-		{ID: uuid.NewString() ,Name: "ceramic floor"},
-		{ID: uuid.NewString() ,Name: "balcony"},
-		{ID: uuid.NewString() ,Name: "alarm"},
-		{ID: uuid.NewString() ,Name: "laminate"},
-		{ID: uuid.NewString() ,Name: "blinds"},
-		{ID: uuid.NewString() ,Name: "sauna"},
-		{ID: uuid.NewString() ,Name: "laundry room"},
-		{ID: uuid.NewString() ,Name: "video intercom"},
-		{ID: uuid.NewString() ,Name: "shower"},
-		{ID: uuid.NewString() ,Name: "dressing room"},
-		{ID: uuid.NewString() ,Name: "satin plaster"},
-		{ID: uuid.NewString() ,Name: "wallpaper"},
+		{ID: uuid.NewString(), Name: "adsl"},
+		{ID: uuid.NewString(), Name: "barbecue"},
+		{ID: uuid.NewString(), Name: "panel door"},
+		{ID: uuid.NewString(), Name: "ceramic floor"},
+		{ID: uuid.NewString(), Name: "balcony"},
+		{ID: uuid.NewString(), Name: "alarm"},
+		{ID: uuid.NewString(), Name: "laminate"},
+		{ID: uuid.NewString(), Name: "blinds"},
+		{ID: uuid.NewString(), Name: "sauna"},
+		{ID: uuid.NewString(), Name: "laundry room"},
+		{ID: uuid.NewString(), Name: "video intercom"},
+		{ID: uuid.NewString(), Name: "shower"},
+		{ID: uuid.NewString(), Name: "dressing room"},
+		{ID: uuid.NewString(), Name: "satin plaster"},
+		{ID: uuid.NewString(), Name: "wallpaper"},
 	}
 	postgresDB.DB.Create(&interiorFeatures)
 
 	exteriorFeatures := []models.ExteriorFeature{
-		{ID: uuid.NewString() ,Name: "car park"},
-		{ID: uuid.NewString() ,Name: "elevator"},
-		{ID: uuid.NewString() ,Name: "tennis court"},
-		{ID: uuid.NewString() ,Name: "gym"},
-		{ID: uuid.NewString() ,Name: "garden"},
-		{ID: uuid.NewString() ,Name: "basketball court"},
-		{ID: uuid.NewString() ,Name: "thermal insulation"},
-		{ID: uuid.NewString() ,Name: "market"},
-		{ID: uuid.NewString() ,Name: "security"},
-		{ID: uuid.NewString() ,Name: "pvc"},
-		{ID: uuid.NewString() ,Name: "generator"},
+		{ID: uuid.NewString(), Name: "car park"},
+		{ID: uuid.NewString(), Name: "elevator"},
+		{ID: uuid.NewString(), Name: "tennis court"},
+		{ID: uuid.NewString(), Name: "gym"},
+		{ID: uuid.NewString(), Name: "garden"},
+		{ID: uuid.NewString(), Name: "basketball court"},
+		{ID: uuid.NewString(), Name: "thermal insulation"},
+		{ID: uuid.NewString(), Name: "market"},
+		{ID: uuid.NewString(), Name: "security"},
+		{ID: uuid.NewString(), Name: "pvc"},
+		{ID: uuid.NewString(), Name: "generator"},
 	}
 	postgresDB.DB.Create(&exteriorFeatures)
 }
@@ -161,12 +161,12 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	return result.Error
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	db := postgresDB.DB.Create(&bookmarkApartment)
+	db := postgresDB.DB.Table("bookmarked_apartments").Create(&bookmarkApartment)
 	return db.Error
 }
 
 func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmentID string) bool {
-	result := postgresDB.DB.Table("bookmark_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
+	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
 func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
@@ -183,7 +183,7 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments.Images").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
 

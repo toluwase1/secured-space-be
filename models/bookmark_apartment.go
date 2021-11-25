@@ -1,7 +1,7 @@
 package models
 
 type BookmarkApartment struct {
-	Models
+	//Models
 	UserID      string `json:"user_id"`
 	ApartmentID string `json:"apartment_id"`
 }

@@ -44,10 +44,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			return
 		}
 		userId := userI.(*models.User).ID
-		//if err := s.decode(c, &apartmentRequest); err != nil {
-		//	response.JSON(c, "", http.StatusBadRequest, nil, err)
-		//	return
-		//}
+
 		form, err := c.MultipartForm()
 
 		if err != nil {
@@ -58,6 +55,8 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 
 		formImages := form.File["images"]
 		images := []models.Images{}
+
+		// upload the images to aws.
 		for _, f := range formImages {
 			file, err := f.Open()
 			if err != nil {
@@ -110,7 +109,7 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			return
 		}
 
-		aStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
+		apartmentStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
 		if err != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
 			return
@@ -128,18 +127,18 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 			NoOfRooms:       numOfRooms,
 			Furnished:       furnished,
 			Location:        c.PostForm("location"),
-			ApartmentStatus: models.ApartmentStatus(aStatus),
+			ApartmentStatus: models.ApartmentStatus(apartmentStatus),
 			Interiors:       GetInteriors(interiors),
 			Exteriors:       GetExteriors(exteriors),
 			Images:          images,
 		}
 
-		//err = s.DB.CreateApartment(&apartment)
-		//if err != nil {
-		//	response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
-		//	return
-		//}
-		// upload the image to aws.
+		err = s.DB.CreateApartment(&apartment)
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+
 		log.Println(apartment.Images)
 		response.JSON(c, "Apartment Successfully Added", http.StatusOK, apartment, nil)
 
@@ -192,6 +191,20 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 	}
 }
 
+func (s *Server) GetApartmentDetails() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apartment := c.Param("apartmentID")
+		apart, err := s.DB.ApartmentDetails(apartment)
+		if err != nil {
+			log.Printf("error retrieving apartment: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+		response.JSON(c, "apartment retrieved successfully", http.StatusOK, gin.H{"apartment": apart}, nil)
+		return
+	}
+}
+
 func (s *Server) handleGetInteriorFeatures() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// fetch the interior features from database
@@ -214,6 +227,19 @@ func (s *Server) handleGetExteriorFeatures() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "here are the exterior features", http.StatusOK, exteriorFeatures, nil)
+		return
+	}
+}
+
+func (s *Server) handleGetCategories() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		//fetch the categories from database
+		categories, err := s.DB.GetAllCategory()
+		if err != nil {
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"could not retrieve all categories"})
+			return
+		}
+		response.JSON(c, "here are the exterior features", http.StatusOK, categories, nil)
 		return
 	}
 }

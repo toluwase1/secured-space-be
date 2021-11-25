@@ -30,7 +30,7 @@ func SendVerifyAccount(userEmail, link string) (string, error) {
 	EmailFrom := os.Getenv("MG_EMAIL_FROM")
 
 	mg := mailgun.NewMailgun(domain, apikey)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
 	m := mg.NewMessage(EmailFrom, "Verify Account", "")

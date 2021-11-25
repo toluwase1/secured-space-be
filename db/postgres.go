@@ -43,14 +43,51 @@ func (postgresDB *PostgresDB) Init() {
 		log.Println("unable to migrate database.", err.Error())
 	}
 
-	err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
-	}
-	err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
-	}
+	//err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
+	//if err != nil {
+	//	log.Println("unable to create role.", err.Error())
+	//}
+	//err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
+	//if err != nil {
+	//	log.Println("unable to create role.", err.Error())
+	//}
+
+	//categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
+	//postgresDB.DB.Create(&categories)
+	//
+	//interiorFeatures := []models.InteriorFeature{
+	//	{ID: uuid.NewString() ,Name: "adsl"},
+	//	{ID: uuid.NewString() ,Name: "barbecue"},
+	//	{ID: uuid.NewString() ,Name: "panel door"},
+	//	{ID: uuid.NewString() ,Name: "ceramic floor"},
+	//	{ID: uuid.NewString() ,Name: "balcony"},
+	//	{ID: uuid.NewString() ,Name: "alarm"},
+	//	{ID: uuid.NewString() ,Name: "laminate"},
+	//	{ID: uuid.NewString() ,Name: "blinds"},
+	//	{ID: uuid.NewString() ,Name: "sauna"},
+	//	{ID: uuid.NewString() ,Name: "laundry room"},
+	//	{ID: uuid.NewString() ,Name: "video intercom"},
+	//	{ID: uuid.NewString() ,Name: "shower"},
+	//	{ID: uuid.NewString() ,Name: "dressing room"},
+	//	{ID: uuid.NewString() ,Name: "satin plaster"},
+	//	{ID: uuid.NewString() ,Name: "wallpaper"},
+	//}
+	//postgresDB.DB.Create(&interiorFeatures)
+	//
+	//exteriorFeatures := []models.ExteriorFeature{
+	//	{ID: uuid.NewString() ,Name: "car park"},
+	//	{ID: uuid.NewString() ,Name: "elevator"},
+	//	{ID: uuid.NewString() ,Name: "tennis court"},
+	//	{ID: uuid.NewString() ,Name: "gym"},
+	//	{ID: uuid.NewString() ,Name: "garden"},
+	//	{ID: uuid.NewString() ,Name: "basketball court"},
+	//	{ID: uuid.NewString() ,Name: "thermal insulation"},
+	//	{ID: uuid.NewString() ,Name: "market"},
+	//	{ID: uuid.NewString() ,Name: "security"},
+	//	{ID: uuid.NewString() ,Name: "pvc"},
+	//	{ID: uuid.NewString() ,Name: "generator"},
+	//}
+	//postgresDB.DB.Create(&exteriorFeatures)
 
 }
 
@@ -142,6 +179,14 @@ func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.A
 	return user.BookmarkedApartments, result.Error
 }
 
+func (postgresDB *PostgresDB) GetAllCategory() ([]models.Category, error) {
+	categories := []models.Category{}
+	if err := postgresDB.DB.Find(&categories).Error; err != nil {
+		return nil, err
+	}
+	return categories, nil
+}
+
 func (postgresDB *PostgresDB) GetAllInteriorFeatures() ([]models.InteriorFeature, error) {
 	interiorFeatures := []models.InteriorFeature{}
 	if err := postgresDB.DB.Find(&interiorFeatures).Error; err != nil {
@@ -200,6 +245,12 @@ func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, ma
 	}
 	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error
+}
+
+func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error) {
+	var apart *models.Apartment
+	result := postgersDB.DB.Where("id = ?", apartmentID).Find(&apart)
+	return apart, result.Error
 }
 
 func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {

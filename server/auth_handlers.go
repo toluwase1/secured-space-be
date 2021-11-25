@@ -45,7 +45,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 
-		tenantDetails, err := s.DB.CreateUser(user)
+		_, err = s.DB.CreateUser(user)
 		if err != nil {
 			log.Printf("create user err: %v\n", err)
 			if err, ok := err.(db.ValidationError); ok {
@@ -57,7 +57,8 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
-		_, err = s.Mail.SendVerifyAccount(tenantDetails.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",tenantDetails.ID))
+		 //tenantDetails:=  &models.User{}
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:8080/api/v1/verify-email/%s",user.ID))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})

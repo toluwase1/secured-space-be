@@ -38,6 +38,8 @@ type DB interface {
 	FindUserByID(userID string) (*models.User, error)
 	SetUserToActive(userID string)  error
 
+
+
 }
 type Mailer interface {
 	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)

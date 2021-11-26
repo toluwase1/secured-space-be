@@ -17,6 +17,7 @@ type User struct {
 	RoleID               string      `json:"role_id"`
 	Role                 Role		 `json:"role"`
 	IsActive			bool		`json:"is_active" gorm:"default:false"`
+	Token				string		`json:"-"`
 }
 type Images struct {
 	Models

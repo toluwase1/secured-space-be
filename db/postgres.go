@@ -166,8 +166,22 @@ func (postgresDB *PostgresDB) CheckApartmentInBookmarkApartment(userID, apartmen
 	result := postgresDB.DB.Table("bookmarked_apartments").Where("user_id = ? AND apartment_id = ?", userID, apartmentID).First(&models.BookmarkApartment{})
 	return result.RowsAffected == 1
 }
-func (postgresDB *PostgresDB) UpdateApartment(apartment *models.Apartment, apartmentID string) error {
-	result := postgresDB.DB.Model(models.Apartment{}).Where("id = ?", apartmentID).Updates(apartment)
+func (postgresDB *PostgresDB) UpdateApartment(apartment map[string]interface{}, apartmentID string, interiors []map[string]interface{}, exteriors []map[string]interface{}) error {
+	postgresDB.DB.Model(&models.Images{}).Where("apartment_id = ?", apartmentID).Delete(&models.Images{})
+	result := postgresDB.DB.Model(&models.Apartment{}).Where("id = ?", apartmentID).Updates(&apartment)
+	res := postgresDB.DB.Table("apartment_interiors").Where("apartment_id = ?", apartmentID).Delete(map[string]interface{}{})
+	if res.Error == nil {
+		postgresDB.DB.Table("apartment_interiors").Create(&interiors)
+	}
+	res = postgresDB.DB.Table("apartment_exteriors").Where("apartment_id = ?", apartmentID).Delete(map[string]interface{}{})
+	if res.Error == nil {
+		postgresDB.DB.Table("apartment_exteriors").Create(&exteriors)
+	}
+
+	//log.Println("here is it",*result)
+	//log.Println("here is it2",apartment.ApartmentStatus)
+	//log.Println("here is it2",apartment.Furnished)
+	//log.Println("here is it3",apartmentID)
 	return result.Error
 }
 

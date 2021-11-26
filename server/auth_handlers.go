@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, err := s.DB.GetRoleByName("tenant")
@@ -108,7 +109,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s",user.ID))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:8080/verify-email/%s",user.ID))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
@@ -140,6 +141,13 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"user not found"})
 			return
 		}
+
+		if user.IsActive == false{
+			log.Printf("No user: %v\n", err)
+			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email not verified"})
+			return
+		}
+
 		err = services.CompareHashAndPassword([]byte(loginRequest.Password), user.HashedPassword)
 		if err != nil {
 			log.Printf("passwords do not match %v\n", err)

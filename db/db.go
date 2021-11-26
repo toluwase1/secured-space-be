@@ -19,7 +19,7 @@ type DB interface {
 	FindAllUsersExcept(except string) ([]models.User, error)
 	CreateApartment(apartment *models.Apartment) error
 	DeleteApartment(ID, userID string) error
-	UpdateApartment(apartment *models.Apartment, apartmentID string) error
+	UpdateApartment(apartment map[string]interface{}, apartmentID string, interiors []map[string]interface{}, exteriors []map[string]interface{}) error
 	GetApartmentByID(apartmentID string) (*models.Apartment, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool

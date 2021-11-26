@@ -21,6 +21,8 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
+
+
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables
@@ -118,6 +120,7 @@ func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) 
 	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
 	return user, err
 }
+
 
 func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
 	var user *models.User

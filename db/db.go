@@ -37,6 +37,8 @@ type DB interface {
 	GetRoleByName(name string) (models.Role, error)
 	FindUserByID(userID string) (*models.User, error)
 	SetUserToActive(userID string)  error
+	CompareToken(userID string) (*models.User, error)
+	PopulateTables()
 
 
 

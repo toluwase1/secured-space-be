@@ -121,6 +121,11 @@ func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) 
 	return user, err
 }
 
+func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error){
+	var user *models.User
+	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
+	return user, err
+}
 
 func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
 	var user *models.User

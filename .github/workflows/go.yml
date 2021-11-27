@@ -30,7 +30,6 @@ jobs:
               curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
               dep ensure
           fi
-
       - name: Build
         run: go build -v .
 
@@ -39,7 +38,6 @@ jobs:
           go get github.com/golang/mock/mockgen
           make mock-db
           go test -v ./...
-
       - uses: akhileshns/heroku-deploy@v3.12.12
         if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
         with:

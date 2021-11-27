@@ -70,7 +70,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:8080/api/v1/verify-email/%s/%s",user.ID,*accToken))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
 		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
@@ -118,7 +118,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		_, err = s.DB.FindUserByEmail(user.Email)
 		if err == nil {
-			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			response.JSON(c, "", http.StatusNotFound, nil, []string{ "user email already exists" })
 			return
 		}
 		_, err = s.DB.CreateUser(user)
@@ -133,11 +133,11 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:8080/api/v1/verify-email/%s/%s",user.ID,*accToken))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
 		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
-			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"email could not be sent"})
 		}
 		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
 	}

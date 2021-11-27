@@ -132,7 +132,9 @@ func (postgresDB *PostgresDB) PopulateTables() {
 	postgresDB.DB.First(&users)
 
 	category := models.Category{}
-	postgresDB.DB.First(&category)
+	postgresDB.DB.Where("name = ?", "duplex").Find(&category)
+	cate := models.Category{}
+	postgresDB.DB.Where("name = ?", "bungalow").Find(&cate)
 
 	infeature := []models.InteriorFeature{}
 	postgresDB.DB.Limit(5).Find(&infeature)
@@ -146,6 +148,23 @@ func (postgresDB *PostgresDB) PopulateTables() {
 			UserID:          users.ID,
 			Title:           gofakeit.Sentence(10),
 			CategoryID:      category.ID,
+			Description:     gofakeit.LoremIpsumSentence(20),
+			Price:           gofakeit.Number(1000, 2000),
+			NoOfRooms:       gofakeit.Number(1, 20),
+			Furnished:       gofakeit.Bool(),
+			Location:        gofakeit.City(),
+			Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
+			ApartmentStatus: true,
+			Interiors:       infeature,
+			Exteriors:       exfeature,
+		}
+		apartments = append(apartments, *apartment)
+	}
+	for i := 0; i < 10; i++ {
+		apartment := &models.Apartment{
+			UserID:          users.ID,
+			Title:           gofakeit.Sentence(10),
+			CategoryID:      cate.ID,
 			Description:     gofakeit.LoremIpsumSentence(20),
 			Price:           gofakeit.Number(1000, 2000),
 			NoOfRooms:       gofakeit.Number(1, 20),

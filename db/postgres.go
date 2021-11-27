@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
@@ -43,6 +44,7 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+	postgresDB.PopulateTables()
 
 }
 func (postgresDB *PostgresDB) PopulateTables() {
@@ -51,17 +53,37 @@ func (postgresDB *PostgresDB) PopulateTables() {
 		log.Println("unable to migrate database.", err.Error())
 	}
 
-	err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
-	}
-	err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
+	roles := []models.Role{{Title: "tenant"}, {Title: "agent"}}
+	result := postgresDB.DB.Find(&models.Role{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&roles)
 	}
 
 	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"}, {Name: "penthouse"}, {Name: "semi-detached"}, {Name: "maisonette"}, {Name: "duplex"}}
-	postgresDB.DB.Create(&categories)
+	result = postgresDB.DB.Find(&models.Category{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&categories)
+	}
+
+	rol := models.Role{}
+	postgresDB.DB.Last(&rol)
+
+	user := &models.User{
+		FirstName:            "John",
+		LastName:             "Doe",
+		Phone1:               "09088877665",
+		Phone2:               "",
+		Email:                "jdoe@gmail.com",
+		Address:              "montero",
+		HashedPassword:       "$2a$04$UWuxyk8f.nH9l8RC443aYujYrq2ck564ywZ6DAB7Bp3QM7/rGW2Ta",
+		BookmarkedApartments: nil,
+		Image:                "https://i.ibb.co/5jwDfyF/Photo-on-24-11-2021-at-20-45.jpg",
+		RoleID:               rol.ID,
+		IsActive:             true,
+	}
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&user)
+	}
 
 	interiorFeatures := []models.InteriorFeature{
 		{ID: uuid.NewString(), Name: "adsl"},
@@ -80,7 +102,10 @@ func (postgresDB *PostgresDB) PopulateTables() {
 		{ID: uuid.NewString(), Name: "satin plaster"},
 		{ID: uuid.NewString(), Name: "wallpaper"},
 	}
-	postgresDB.DB.Create(&interiorFeatures)
+	result = postgresDB.DB.Find(&models.InteriorFeature{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&interiorFeatures)
+	}
 
 	exteriorFeatures := []models.ExteriorFeature{
 		{ID: uuid.NewString(), Name: "car park"},
@@ -95,7 +120,46 @@ func (postgresDB *PostgresDB) PopulateTables() {
 		{ID: uuid.NewString(), Name: "pvc"},
 		{ID: uuid.NewString(), Name: "generator"},
 	}
-	postgresDB.DB.Create(&exteriorFeatures)
+
+	result = postgresDB.DB.Find(&models.ExteriorFeature{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&exteriorFeatures)
+	}
+
+	users := models.User{}
+	postgresDB.DB.First(&users)
+
+	category := models.Category{}
+	postgresDB.DB.First(&category)
+
+	infeature := []models.InteriorFeature{}
+	postgresDB.DB.Limit(5).Find(&infeature)
+	exfeature := []models.ExteriorFeature{}
+	postgresDB.DB.Limit(5).Find(&exfeature)
+
+	var apartments []models.Apartment
+
+	for i := 0; i < 10; i++ {
+		apartment := &models.Apartment{
+			UserID:          users.ID,
+			Title:           gofakeit.Sentence(10),
+			CategoryID:      category.ID,
+			Description:     gofakeit.LoremIpsumSentence(20),
+			Price:           gofakeit.Number(1000, 2000),
+			NoOfRooms:       gofakeit.Number(1, 20),
+			Furnished:       gofakeit.Bool(),
+			Location:        gofakeit.City(),
+			Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
+			ApartmentStatus: true,
+			Interiors:       infeature,
+			Exteriors:       exfeature,
+		}
+		apartments = append(apartments, *apartment)
+	}
+	result = postgresDB.DB.Find(&models.Apartment{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&apartments)
+	}
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -119,7 +183,7 @@ func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) 
 	return user, err
 }
 
-func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
+func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
 	var user *models.User
 	err := postgresDB.DB.Model(&user).Where("id = ?", userID).Update("is_active", true).Error
 	return err

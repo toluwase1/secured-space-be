@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/decadevs/rentals-api/models"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -20,26 +21,6 @@ import (
 type PostgresDB struct {
 	DB *gorm.DB
 }
-
-//func (postgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
-//	panic("implement me")
-//}
-//
-//func (postgresDB *PostgresDB) GetAllCategories() []models.Category {
-//	panic("implement me")
-//}
-//
-//func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
-//	panic("implement me")
-//}
-//
-//func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
-//	panic("implement me")
-//}
-//
-//func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error) {
-//	panic("implement me")
-//}
 
 func (postgresDB *PostgresDB) PopulateTables() {
 	panic("implement me")

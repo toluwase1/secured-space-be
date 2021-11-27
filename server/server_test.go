@@ -94,7 +94,7 @@ func TestSignupIfEmailExistsTenant(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Contains(t, w.Body.String(), "User email already exists")
+	assert.Contains(t, w.Body.String(), "user email already exists")
 }
 
 func TestSignupWithCorrectDetailsTenant(t *testing.T) {
@@ -143,7 +143,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "User email already exists")
+		assert.Contains(t, w.Body.String(), "user email already exists")
 	})
 
 }
@@ -228,7 +228,7 @@ func TestSignupIfEmailExistsAgent(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Contains(t, w.Body.String(), "User email already exists")
+	assert.Contains(t, w.Body.String(), "user email already exists")
 }
 
 func TestSignupWithCorrectDetailsAgent(t *testing.T) {
@@ -276,7 +276,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "User email already exists")
+		assert.Contains(t, w.Body.String(), "user email already exists")
 	})
 
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/decadevs/rentals-api/server/response"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -28,9 +29,9 @@ func (s *Server) VerifyEmail() gin.HandlerFunc {
 		}
 
 		if token != user.Token{
-				log.Printf("Error: %v", err.Error())
-				response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Invalid user token"})
-				return
+			log.Println("invalid token")
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Invalid user token or ID"})
+			return
 		}
 
 		err = s.DB.SetUserToActive(ID)
@@ -39,6 +40,6 @@ func (s *Server) VerifyEmail() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Could not set user"})
 			return
 		}
-		response.JSON(c, "user verified successfully", http.StatusOK, nil, nil)
+		response.JSON(c, fmt.Sprintf("%s,your email has been verified successfully.",user.FirstName), http.StatusOK, nil, nil)
 	}
 }

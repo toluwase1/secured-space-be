@@ -37,8 +37,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
 
 	apirouter.GET("/apartment", s.GetAllApartments())
-	apirouter.POST("/verify-email/:userID",s.VerifyEmail())
-
+	apirouter.GET("/verify-email/:userID/:userToken",s.VerifyEmail())
 	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
@@ -67,6 +66,7 @@ func (s *Server) setupRouter() *gin.Engine {
 		s.defineRoutes(r)
 		return r
 	}
+
 	r := gin.New()
 	// LoggerWithFormatter middleware will write the logs to gin.DefaultWriter
 	// By default gin.DefaultWriter = os.Stdout
@@ -114,6 +114,7 @@ func (s *Server) Start() {
 		Handler: r,
 	}
 
+
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
 	go func() {
@@ -124,6 +125,7 @@ func (s *Server) Start() {
 
 	log.Printf("Server started on %s\n", PORT)
 
+	s.DB.PopulateTables()
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)

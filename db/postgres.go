@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/decadevs/rentals-api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,25 +21,25 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
-func (postgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
-	panic("implement me")
-}
-
-func (postgresDB *PostgresDB) GetAllCategories() []models.Category {
-	panic("implement me")
-}
-
-func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
-	panic("implement me")
-}
-
-func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
-	panic("implement me")
-}
-
-func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error) {
-	panic("implement me")
-}
+//func (postgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
+//	panic("implement me")
+//}
+//
+//func (postgresDB *PostgresDB) GetAllCategories() []models.Category {
+//	panic("implement me")
+//}
+//
+//func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
+//	panic("implement me")
+//}
+//
+//func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
+//	panic("implement me")
+//}
+//
+//func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error) {
+//	panic("implement me")
+//}
 
 func (postgresDB *PostgresDB) PopulateTables() {
 	panic("implement me")
@@ -61,57 +62,121 @@ func (postgresDB *PostgresDB) Init() {
 		log.Fatalf("failed to connect database: %v", err)
 	}
 	postgresDB.DB = db
+	postgresDB.PopulateTables()
 
 	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
 
-	err = postgresDB.DB.Create(&models.Role{Title: "tenant"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
-	}
-	err = postgresDB.DB.Create(&models.Role{Title: "agent"}).Error
-	if err != nil {
-		log.Println("unable to create role.", err.Error())
+	roles := []models.Role{{Title: "tenant"}, {Title: "agent"}}
+	result := postgresDB.DB.Find(&models.Role{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&roles)
 	}
 
-	//categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"},{Name: "penthouse"},{Name: "semi-detached"},{Name: "maisonette"},{Name: "duplex"}}
-	//postgresDB.DB.Create(&categories)
 
-	//interiorFeatures := []models.InteriorFeature{
-	//	{ID: uuid.NewString() ,Name: "adsl"},
-	//	{ID: uuid.NewString() ,Name: "barbecue"},
-	//	{ID: uuid.NewString() ,Name: "panel door"},
-	//	{ID: uuid.NewString() ,Name: "ceramic floor"},
-	//	{ID: uuid.NewString() ,Name: "balcony"},
-	//	{ID: uuid.NewString() ,Name: "alarm"},
-	//	{ID: uuid.NewString() ,Name: "laminate"},
-	//	{ID: uuid.NewString() ,Name: "blinds"},
-	//	{ID: uuid.NewString() ,Name: "sauna"},
-	//	{ID: uuid.NewString() ,Name: "laundry room"},
-	//	{ID: uuid.NewString() ,Name: "video intercom"},
-	//	{ID: uuid.NewString() ,Name: "shower"},
-	//	{ID: uuid.NewString() ,Name: "dressing room"},
-	//	{ID: uuid.NewString() ,Name: "satin plaster"},
-	//	{ID: uuid.NewString() ,Name: "wallpaper"},
-	//}
-	//postgresDB.DB.Create(&interiorFeatures)
-	//
-	//exteriorFeatures := []models.ExteriorFeature{
-	//	{ID: uuid.NewString() ,Name: "car park"},
-	//	{ID: uuid.NewString() ,Name: "elevator"},
-	//	{ID: uuid.NewString() ,Name: "tennis court"},
-	//	{ID: uuid.NewString() ,Name: "gym"},
-	//	{ID: uuid.NewString() ,Name: "garden"},
-	//	{ID: uuid.NewString() ,Name: "basketball court"},
-	//	{ID: uuid.NewString() ,Name: "thermal insulation"},
-	//	{ID: uuid.NewString() ,Name: "market"},
-	//	{ID: uuid.NewString() ,Name: "security"},
-	//	{ID: uuid.NewString() ,Name: "pvc"},
-	//	{ID: uuid.NewString() ,Name: "generator"},
-	//}
-	//postgresDB.DB.Create(&exteriorFeatures)
+	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"}, {Name: "penthouse"}, {Name: "semi-detached"}, {Name: "maisonette"}, {Name: "duplex"}}
+	result = postgresDB.DB.Find(&models.Category{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&categories)
+	}
+
+	rol := models.Role{}
+	postgresDB.DB.Last(&rol)
+
+	user := &models.User{
+		FirstName:            "John",
+		LastName:             "Doe",
+		Phone1:               "09088877665",
+		Phone2:               "",
+		Email:                "jdoe@gmail.com",
+		Address:              "montero",
+		HashedPassword:       "$2a$04$UWuxyk8f.nH9l8RC443aYujYrq2ck564ywZ6DAB7Bp3QM7/rGW2Ta",
+		BookmarkedApartments: nil,
+		Image:                "https://i.ibb.co/5jwDfyF/Photo-on-24-11-2021-at-20-45.jpg",
+		RoleID:               rol.ID,
+		IsActive:             true,
+	}
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&user)
+	}
+
+	interiorFeatures := []models.InteriorFeature{
+		{ID: uuid.NewString(), Name: "adsl"},
+		{ID: uuid.NewString(), Name: "barbecue"},
+		{ID: uuid.NewString(), Name: "panel door"},
+		{ID: uuid.NewString(), Name: "ceramic floor"},
+		{ID: uuid.NewString(), Name: "balcony"},
+		{ID: uuid.NewString(), Name: "alarm"},
+		{ID: uuid.NewString(), Name: "laminate"},
+		{ID: uuid.NewString(), Name: "blinds"},
+		{ID: uuid.NewString(), Name: "sauna"},
+		{ID: uuid.NewString(), Name: "laundry room"},
+		{ID: uuid.NewString(), Name: "video intercom"},
+		{ID: uuid.NewString(), Name: "shower"},
+		{ID: uuid.NewString(), Name: "dressing room"},
+		{ID: uuid.NewString(), Name: "satin plaster"},
+		{ID: uuid.NewString(), Name: "wallpaper"},
+	}
+	result = postgresDB.DB.Find(&models.InteriorFeature{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&interiorFeatures)
+	}
+
+	exteriorFeatures := []models.ExteriorFeature{
+		{ID: uuid.NewString(), Name: "car park"},
+		{ID: uuid.NewString(), Name: "elevator"},
+		{ID: uuid.NewString(), Name: "tennis court"},
+		{ID: uuid.NewString(), Name: "gym"},
+		{ID: uuid.NewString(), Name: "garden"},
+		{ID: uuid.NewString(), Name: "basketball court"},
+		{ID: uuid.NewString(), Name: "thermal insulation"},
+		{ID: uuid.NewString(), Name: "market"},
+		{ID: uuid.NewString(), Name: "security"},
+		{ID: uuid.NewString(), Name: "pvc"},
+		{ID: uuid.NewString(), Name: "generator"},
+	}
+
+	result = postgresDB.DB.Find(&models.ExteriorFeature{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&exteriorFeatures)
+	}
+
+	users := models.User{}
+	postgresDB.DB.First(&users)
+
+	category := models.Category{}
+	postgresDB.DB.First(&category)
+
+	infeature := []models.InteriorFeature{}
+	postgresDB.DB.Limit(5).Find(&infeature)
+	exfeature := []models.ExteriorFeature{}
+	postgresDB.DB.Limit(5).Find(&exfeature)
+
+	var apartments []models.Apartment
+
+	for i := 0; i < 10; i++ {
+		apartment := &models.Apartment{
+			UserID:          users.ID,
+			Title:           gofakeit.Sentence(10),
+			CategoryID:      category.ID,
+			Description:     gofakeit.LoremIpsumSentence(20),
+			Price:           gofakeit.Number(1000, 2000),
+			NoOfRooms:       gofakeit.Number(1, 20),
+			Furnished:       gofakeit.Bool(),
+			Location:        gofakeit.City(),
+			Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
+			ApartmentStatus: true,
+			Interiors:       infeature,
+			Exteriors:       exfeature,
+		}
+		apartments = append(apartments, *apartment)
+	}
+	result = postgresDB.DB.Find(&models.Apartment{})
+	if result.RowsAffected < 1 {
+		postgresDB.DB.Create(&apartments)
+	}
 
 }
 
@@ -129,6 +194,26 @@ func (postgresDB *PostgresDB) FindUserByEmail(email string) (*models.User, error
 	userEmail := postgresDB.DB.Where("email = ?", email).Preload("Role").First(&user)
 	return user, userEmail.Error
 }
+
+func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
+	var user *models.User
+	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
+	return user, err
+}
+
+
+func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error){
+	var user *models.User
+	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
+	return user, err
+}
+
+func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
+	var user *models.User
+	err := postgresDB.DB.Model(&user).Where("id = ?", userID).Update("is_active", true).Error
+	return err
+}
+
 func (postgresDB *PostgresDB) UpdateUser(id string, update *models.UpdateUser) error {
 	result :=
 		postgresDB.DB.Model(models.User{}).
@@ -301,3 +386,14 @@ func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	return role, err
 }
 
+func (PostgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
+	var apartments []models.Apartment
+	PostgresDB.DB.Preload("Images").Where("category_id = ?", categoryID).Find(&apartments)
+	return apartments
+}
+
+func (PostgresDB *PostgresDB) GetAllCategories() []models.Category {
+	var categories []models.Category
+	PostgresDB.DB.Find(&categories)
+	return categories
+}

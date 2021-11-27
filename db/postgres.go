@@ -20,6 +20,30 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
+func (postgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
+	panic("implement me")
+}
+
+func (postgresDB *PostgresDB) GetAllCategories() []models.Category {
+	panic("implement me")
+}
+
+func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) {
+	panic("implement me")
+}
+
+func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
+	panic("implement me")
+}
+
+func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error) {
+	panic("implement me")
+}
+
+func (postgresDB *PostgresDB) PopulateTables() {
+	panic("implement me")
+}
+
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables

@@ -55,7 +55,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		}
 		_, err = s.DB.FindUserByEmail(user.Email)
 		if err == nil {
-			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"user email already exists"})
 			return
 		}
 

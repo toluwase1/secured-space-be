@@ -122,7 +122,9 @@ func (s *Server) SendNewMessage() gin.HandlerFunc {
     return func(c *gin.Context) {
 		payload := struct {
 			Message string `json:"message"`
-			Username string  `json:"username"`
+			Username string  `json:"username,omitempty"`
+			CreatedAt string	`json:"created_at"`
+			Sender 	 string		`json:"sender"`
 		}{}
 		err := c.ShouldBindJSON(&payload)
 		if err != nil {

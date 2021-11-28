@@ -24,8 +24,6 @@ func TestSignupWithInCorrectDetailsTenant(t *testing.T) {
 	}
 	r := s.setupRouter()
 
-
-
 	role := models.Role{
 		Models: models.Models{},
 		Title:  "tenant",
@@ -37,8 +35,8 @@ func TestSignupWithInCorrectDetailsTenant(t *testing.T) {
 		Password:  "password",
 		Email:     "spankie_signup",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
 
@@ -79,8 +77,8 @@ func TestSignupIfEmailExistsTenant(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 
 	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
@@ -96,7 +94,7 @@ func TestSignupIfEmailExistsTenant(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Contains(t, w.Body.String(), "User email already exists")
+	assert.Contains(t, w.Body.String(), "user email already exists")
 }
 
 func TestSignupWithCorrectDetailsTenant(t *testing.T) {
@@ -108,7 +106,6 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 		Router: router.NewRouter(),
 	}
 	r := s.setupRouter()
-
 
 	role := models.Role{
 		Models: models.Models{},
@@ -122,8 +119,8 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 
 	m.EXPECT().GetRoleByName("tenant").Return(role, nil)
@@ -146,7 +143,7 @@ func TestSignupWithCorrectDetailsTenant(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "User email already exists")
+		assert.Contains(t, w.Body.String(), "user email already exists")
 	})
 
 }
@@ -172,12 +169,11 @@ func TestSignupWithInCorrectDetailsAgent(t *testing.T) {
 		Password:  "password",
 		Email:     "spankie_signup",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 
 	m.EXPECT().GetRoleByName("agent").Return(role, nil)
-
 
 	jsonuser, err := json.Marshal(user)
 	if err != nil {
@@ -215,8 +211,8 @@ func TestSignupIfEmailExistsAgent(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 
 	m.EXPECT().GetRoleByName("agent").Return(role, nil)
@@ -232,7 +228,7 @@ func TestSignupIfEmailExistsAgent(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	assert.Contains(t, w.Body.String(), "User email already exists")
+	assert.Contains(t, w.Body.String(), "user email already exists")
 }
 
 func TestSignupWithCorrectDetailsAgent(t *testing.T) {
@@ -257,8 +253,8 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		Address:   "1, boli drive",
 		Email:     "spankie_signup@gmail.com",
 		Phone1:    "08909876787",
-		RoleID: role.ID,
-		Role: role,
+		RoleID:    role.ID,
+		Role:      role,
 	}
 
 	m.EXPECT().GetRoleByName("agent").Return(role, nil)
@@ -280,8 +276,7 @@ func TestSignupWithCorrectDetailsAgent(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
-		assert.Contains(t, w.Body.String(), "User email already exists")
+		assert.Contains(t, w.Body.String(), "user email already exists")
 	})
-
 
 }

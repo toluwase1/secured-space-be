@@ -15,7 +15,6 @@ import (
 	"time"
 )
 
-
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, err := s.DB.GetRoleByName("tenant")
@@ -28,6 +27,19 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			RoleID: role.ID,
 			Role:   role,
 		}
+
+		// Generates access claims and refresh claims
+		accessClaims, _ := services.GenerateClaims(user.Email)
+		secret := os.Getenv("JWT_SECRET")
+		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+		if err != nil {
+			log.Printf("token generation error err: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+
+		user.Token = *accToken
+		fmt.Println(*accToken)
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "Cannot decode user signup request", http.StatusBadRequest, nil, errs)
@@ -42,7 +54,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		}
 		_, err = s.DB.FindUserByEmail(user.Email)
 		if err == nil {
-			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"user email already exists"})
 			return
 		}
 
@@ -57,14 +69,13 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
-
-		 //tenantDetails:=  &models.User{}
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s",user.ID))
-		if err != nil{
+		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("http://localhost:3000/verify-email/%s/%s", user.ID, *accToken))
+		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
+		if err != nil {
 			log.Printf("Error: %v", err.Error())
-			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Email could not be sent"})
 		}
-		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
+		response.JSON(c, "email sent successfully", http.StatusCreated, nil, nil)
 	}
 }
 
@@ -81,6 +92,18 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			Role:   role,
 		}
 
+		// Generates access claims and refresh claims
+		accessClaims, _ := services.GenerateClaims(user.Email)
+		secret := os.Getenv("JWT_SECRET")
+		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
+		if err != nil {
+			log.Printf("token generation error err: %v\n", err)
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+			return
+		}
+
+		user.Token = *accToken
+
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
 			return
@@ -94,7 +117,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		_, err = s.DB.FindUserByEmail(user.Email)
 		if err == nil {
-			response.JSON(c, "", http.StatusNotFound, nil, []string{"User email already exists"})
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"user email already exists"})
 			return
 		}
 		_, err = s.DB.CreateUser(user)
@@ -109,12 +132,13 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
 
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s",user.ID))
-		if err != nil{
+		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("http://localhost:3000/verify-email/%s/%s", user.ID, *accToken))
+		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
+		if err != nil {
 			log.Printf("Error: %v", err.Error())
-			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"email could not be sent"})
 		}
-		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
+		response.JSON(c, "email sent successfully", http.StatusCreated, nil, nil)
 	}
 }
 
@@ -142,7 +166,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			return
 		}
 
-		if user.IsActive == false{
+		if user.IsActive == false {
 			log.Printf("No user: %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email not verified"})
 			return

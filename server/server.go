@@ -35,9 +35,12 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
-
+	apirouter.POST("/new/user", s.registerNewUser())
+	apirouter.POST("/pusher/auth", s.pusherAuth())
+	apirouter.POST("/chat/create", s.CreateChat())
+	apirouter.POST("/pusher/message", s.SendNewMessage())
 	apirouter.GET("/apartment", s.GetAllApartments())
-	apirouter.GET("/verify-email/:userID",s.VerifyEmail())
+	apirouter.POST("/verify-email/:userID/:userToken", s.VerifyEmail())
 	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
@@ -114,7 +117,6 @@ func (s *Server) Start() {
 		Handler: r,
 	}
 
-
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
 	go func() {
@@ -125,7 +127,7 @@ func (s *Server) Start() {
 
 	log.Printf("Server started on %s\n", PORT)
 
-
+	s.DB.PopulateTables()
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)

@@ -22,9 +22,6 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
-func (postgresDB *PostgresDB) PopulateTables() {
-	panic("implement me")
-}
 
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
@@ -36,8 +33,13 @@ func (postgresDB *PostgresDB) Init() {
 	DBPort := os.Getenv("DB_PORT")
 	DBTimeZone := os.Getenv("DB_TIMEZONE")
 	DBMode := os.Getenv("DB_MODE")
-
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
+	var dsn string
+	databaseUrl := os.Getenv("DATABASE_URL")
+	if databaseUrl == "" {
+		dsn = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v TimeZone=%v", DBHost, DBUser, DBPass, DBName, DBPort, DBMode, DBTimeZone)
+	} else {
+		dsn = databaseUrl
+	}
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
@@ -45,7 +47,9 @@ func (postgresDB *PostgresDB) Init() {
 	postgresDB.DB = db
 	postgresDB.PopulateTables()
 
-	err = postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{})
+}
+func (postgresDB *PostgresDB) PopulateTables() {
+	err := postgresDB.DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Apartment{}, &models.Images{}, &models.InteriorFeature{}, &models.ExteriorFeature{}, &models.Category{}, &models.Blacklist{})
 	if err != nil {
 		log.Println("unable to migrate database.", err.Error())
 	}
@@ -55,7 +59,6 @@ func (postgresDB *PostgresDB) Init() {
 	if result.RowsAffected < 1 {
 		postgresDB.DB.Create(&roles)
 	}
-
 
 	categories := []models.Category{{Name: "bungalow"}, {Name: "townhouse"}, {Name: "terraced-houses"}, {Name: "penthouse"}, {Name: "semi-detached"}, {Name: "maisonette"}, {Name: "duplex"}}
 	result = postgresDB.DB.Find(&models.Category{})
@@ -177,7 +180,6 @@ func (postgresDB *PostgresDB) Init() {
 	if result.RowsAffected < 1 {
 		postgresDB.DB.Create(&apartments)
 	}
-
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -201,6 +203,11 @@ func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) 
 	return user, err
 }
 
+func (postgresDB *PostgresDB) GetApartmentByID(apartmentID string) (*models.Apartment, error) {
+	Apartments := &models.Apartment{}
+	result := postgresDB.DB.Preload("Interiors").Preload("Exteriors").Preload("Images").Where("id = ?", apartmentID).Find(&Apartments)
+	return Apartments, result.Error
+}
 
 func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error){
 	var user *models.User
@@ -213,7 +220,6 @@ func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
 	err := postgresDB.DB.Model(&user).Where("id = ?", userID).Update("is_active", true).Error
 	return err
 }
-
 func (postgresDB *PostgresDB) UpdateUser(id string, update *models.UpdateUser) error {
 	result :=
 		postgresDB.DB.Model(models.User{}).
@@ -235,15 +241,11 @@ func (postgresDB *PostgresDB) AddToBlackList(blacklist *models.Blacklist) error 
 	return result.Error
 }
 func (postgresDB *PostgresDB) TokenInBlacklist(token *string) bool {
-	return false
+	result := postgresDB.DB.Where("token = ?", token).Find(&models.Blacklist{})
+	return result.Error != nil
 }
 func (postgresDB *PostgresDB) FindUserByPhone(phone string) (*models.User, error) {
 	return nil, nil
-}
-func (postgresDB *PostgresDB) GetApartmentByID(apartmentID string) (*models.Apartment, error) {
-	Apartments := &models.Apartment{}
-	result := postgresDB.DB.Preload("Interiors").Preload("Exteriors").Preload("Images").Where("id = ?", apartmentID).Find(&Apartments)
-	return Apartments, result.Error
 }
 func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, error) {
 	return nil, nil
@@ -252,7 +254,7 @@ func (postgresDB *PostgresDB) FindAllUsersExcept(except string) ([]models.User, 
 func (postgresDB *PostgresDB) GetUsersApartments(userId string) ([]models.Apartment, error) {
 	var Apartments []models.Apartment
 
-	result := postgresDB.DB.Where("user_id=?", userId).Find(&Apartments)
+	result := postgresDB.DB.Preload("Images").Preload("User").Where("user_id=?", userId).Find(&Apartments)
 
 	return Apartments, result.Error
 }
@@ -267,7 +269,7 @@ func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
 	return result.Error
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {
-	db := postgresDB.DB.Create(&bookmarkApartment)
+	db := postgresDB.DB.Table("bookmarked_apartments").Create(&bookmarkApartment)
 	return db.Error
 }
 
@@ -303,7 +305,7 @@ func (postgresDB *PostgresDB) RemoveBookmarkedApartment(bookmarkApartment *model
 
 func (postgresDB *PostgresDB) GetBookmarkedApartments(userID string) ([]models.Apartment, error) {
 	user := &models.User{}
-	result := postgresDB.DB.Preload("BookmarkedApartments").Where("id = ?", userID).Find(&user)
+	result := postgresDB.DB.Preload("BookmarkedApartments.Images").Where("id = ?", userID).Find(&user)
 	return user.BookmarkedApartments, result.Error
 }
 
@@ -339,7 +341,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 	// config settings: this is where you choose the bucket,
 	// filename, content-type and storage class of the file
 	// you're uploading
-	url := "https://arp-rental.s3-website.eu-west-3.amazonaws.com/" + fileName
+	url := "https://s3-eu-west-3.amazonaws.com/arp-rental/" + fileName
 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(os.Getenv("S3_BUCKET_NAME")),
 		Key:                  aws.String(fileName),
@@ -351,7 +353,7 @@ func (p *PostgresDB) UploadFileToS3(s *session.Session, file multipart.File, fil
 		ServerSideEncryption: aws.String("AES256"),
 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
 	})
-	return url,err
+	return url, err
 }
 
 func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
@@ -362,21 +364,31 @@ func (postgresDB *PostgresDB) ResetPassword(userID, NewPassword string) error {
 func (postgresDB *PostgresDB) SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error) {
 	var apartments []models.Apartment
 	stm := ""
-	if minPrice == "" {
-		stm = fmt.Sprintf("((price = %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	if minPrice == "" && maxPrice == "" {
+		stm = fmt.Sprintf("(category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", categoryID, location)
 	} else if noOfRooms != "" {
 		stm = fmt.Sprintf("(no_of_rooms <= %s OR (price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", noOfRooms, minPrice, maxPrice, categoryID, location)
+	} else if minPrice != "" {
+		stm = fmt.Sprintf("(( price >= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, categoryID, location)
+	} else if maxPrice != "" {
+		stm = fmt.Sprintf("(( price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", maxPrice, categoryID, location)
+	} else if location != "0" {
+		stm = fmt.Sprintf("(location LIKE '%%%s%%')", location)
+	} else if categoryID != "0" {
+		stm = fmt.Sprintf("(category_id LIKE '%%%s%%')", categoryID)
+	} else if categoryID == "0" && location == "0" && minPrice == "" && maxPrice == "" {
+		result := postgresDB.DB.Preload("Images").Find(&apartments)
+		return apartments, result.Error
 	} else {
 		stm = fmt.Sprintf("((price >= %s AND price <= %s)) AND (category_id LIKE '%%%s%%' AND location LIKE '%%%s%%')", minPrice, maxPrice, categoryID, location)
-
 	}
 	result := postgresDB.DB.Preload("Images").Where(stm).Find(&apartments)
 	return apartments, result.Error
 }
 
-func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error){
+func (postgersDB *PostgresDB) ApartmentDetails(apartmentID string) (*models.Apartment, error) {
 	var apart *models.Apartment
-	result := postgersDB.DB.Where("id = ?",apartmentID).Find(&apart)
+	result := postgersDB.DB.Preload("Images").Preload("User").Preload("Exteriors").Preload("Interiors").Where("id = ?", apartmentID).Find(&apart)
 	return apart, result.Error
 }
 

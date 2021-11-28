@@ -9,8 +9,8 @@ const (
 
 type Apartment struct {
 	Models
-	UserID          string            `json:"user_id" gorm:"foreignkey:User(id)"`
-	User			User
+	UserID          string `json:"user_id" gorm:"foreignkey:User(id)"`
+	User            User
 	Title           string            `json:"title" gorm:"not null"`
 	CategoryID      string            `json:"category_id"  gorm:"foreignkey: categories(id)"`
 	Description     string            `json:"description"  gorm:"not null"`

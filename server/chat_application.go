@@ -125,6 +125,7 @@ func (s *Server) SendNewMessage() gin.HandlerFunc {
 			Username string  `json:"username,omitempty"`
 			CreatedAt string	`json:"created_at"`
 			Sender 	 string		`json:"sender"`
+			ApartmentID string	`json:"apartment_id"`
 		}{}
 		err := c.ShouldBindJSON(&payload)
 		if err != nil {

@@ -11,34 +11,34 @@ import (
 )
 
 type Chat struct {
-	Client	pusher.Client
+	Client pusher.Client
 }
 
 type user struct {
-	Name  string `json:"name" xml:"name" form:"name" query:"name"`
-	Email string `json:"email" xml:"email" form:"email" query:"email"`
-	ApartmentID	string	`json:"apartment_id"`
+	Name        string `json:"name" xml:"name" form:"name" query:"name"`
+	Email       string `json:"email" xml:"email" form:"email" query:"email"`
+	ApartmentID string `json:"apartment_id"`
 }
 
 func NewChat() *Chat {
-    client := pusher.Client{
-        AppID:   os.Getenv("PUSHER_APP_ID"),
-        Key:     os.Getenv("PUSHER_APP_KEY"),
-        Secret:  os.Getenv("PUSHER_APP_SECRET"),
-        Cluster: os.Getenv("PUSHER_APP_CLUSTER"),
-        Secure:  true,
-    }
+	client := pusher.Client{
+		AppID:   os.Getenv("PUSHER_APP_ID"),
+		Key:     os.Getenv("PUSHER_APP_KEY"),
+		Secret:  os.Getenv("PUSHER_APP_SECRET"),
+		Cluster: os.Getenv("PUSHER_APP_CLUSTER"),
+		Secure:  true,
+	}
 
-    return &Chat{
-        Client: client,
-    }
+	return &Chat{
+		Client: client,
+	}
 }
 
 func (s *Server) SendMessage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		message := struct {
 			Message string `json:"message"`
-			Channel string  `json:"channel"`
+			Channel string `json:"channel"`
 		}{}
 		err := c.ShouldBindJSON(&message)
 		if err != nil {
@@ -46,14 +46,14 @@ func (s *Server) SendMessage() gin.HandlerFunc {
 		}
 		client := NewChat()
 		err = client.Client.Trigger(message.Channel, "message", message)
-	    if err != nil {
+		if err != nil {
 			log.Printf("Error: %v", err.Error())
 		}
 		c.JSON(200, message)
 	}
 }
 
-func (s *Server) registerNewUser() gin.HandlerFunc{
+func (s *Server) registerNewUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		body, err := ioutil.ReadAll(c.Request.Body)
 
@@ -74,7 +74,7 @@ func (s *Server) registerNewUser() gin.HandlerFunc{
 	}
 
 }
-func (s *Server) CreateChat() gin.HandlerFunc{
+func (s *Server) CreateChat() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		body, err := ioutil.ReadAll(c.Request.Body)
 
@@ -83,10 +83,10 @@ func (s *Server) CreateChat() gin.HandlerFunc{
 		}
 
 		chat := struct {
-            ChannelName string `json:"channel_name"`
+			ChannelName string `json:"channel_name"`
 			InitiatedBy string `json:"initiated_by"`
-			ChatWith string `json:"chat_with"`
-        }{}
+			ChatWith    string `json:"chat_with"`
+		}{}
 		err = json.Unmarshal(body, &chat)
 
 		if err != nil {
@@ -116,16 +116,14 @@ func (s *Server) pusherAuth() gin.HandlerFunc {
 
 }
 
-
-
 func (s *Server) SendNewMessage() gin.HandlerFunc {
-    return func(c *gin.Context) {
+	return func(c *gin.Context) {
 		payload := struct {
-			Message string `json:"message"`
-			Username string  `json:"username,omitempty"`
-			CreatedAt string	`json:"created_at"`
-			Sender 	 string		`json:"sender"`
-			ApartmentID string	`json:"apartment_id"`
+			Message     string `json:"message"`
+			Username    string `json:"username,omitempty"`
+			CreatedAt   string `json:"created_at"`
+			Sender      string `json:"sender"`
+			ApartmentID string `json:"apartment_id"`
 		}{}
 		err := c.ShouldBindJSON(&payload)
 		if err != nil {
@@ -137,5 +135,5 @@ func (s *Server) SendNewMessage() gin.HandlerFunc {
 			log.Printf("Error: %v", err.Error())
 		}
 		c.JSON(200, payload)
-    }
+	}
 }

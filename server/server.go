@@ -40,7 +40,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/chat/create", s.CreateChat())
 	apirouter.POST("/pusher/message", s.SendNewMessage())
 	apirouter.GET("/apartment", s.GetAllApartments())
-	apirouter.POST("/verify-email/:userID/:userToken",s.VerifyEmail())
+	apirouter.POST("/verify-email/:userID/:userToken", s.VerifyEmail())
 	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
@@ -116,7 +116,6 @@ func (s *Server) Start() {
 		Addr:    PORT,
 		Handler: r,
 	}
-
 
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below

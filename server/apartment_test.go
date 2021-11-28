@@ -162,10 +162,10 @@ func TestUpdateApartment(t *testing.T) {
 	apartment := &models.Apartment{
 		User: models.User{
 			FirstName: "a",
-			LastName: "b",
-			Email: "c@gmail.com",
-			Phone1: "123",
-			Password: "1223",
+			LastName:  "b",
+			Email:     "c@gmail.com",
+			Phone1:    "123",
+			Password:  "1223",
 		},
 		Title:           "2 bedrooms",
 		Description:     "Bay area lodge",

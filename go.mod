@@ -5,6 +5,7 @@ go 1.17
 
 require (
 	github.com/aws/aws-sdk-go v1.42.9
+	github.com/brianvoe/gofakeit/v6 v6.9.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.4
@@ -23,7 +24,6 @@ require (
 )
 
 require (
-	github.com/brianvoe/gofakeit/v6 v6.9.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

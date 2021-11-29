@@ -85,7 +85,6 @@ func TestServer_DeleteApartment(t *testing.T) {
 	})
 }
 
-
 func TestApplication_GetApartmentDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mdb := db.NewMockDB(ctrl)

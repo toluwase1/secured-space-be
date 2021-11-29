@@ -22,7 +22,6 @@ type PostgresDB struct {
 	DB *gorm.DB
 }
 
-
 // Init sets up the mongodb instance
 func (postgresDB *PostgresDB) Init() {
 	// Database Variables
@@ -203,6 +202,7 @@ func (postgresDB *PostgresDB) FindUserByID(userID string) (*models.User, error) 
 	return user, err
 }
 
+
 func (postgresDB *PostgresDB) GetApartmentByID(apartmentID string) (*models.Apartment, error) {
 	Apartments := &models.Apartment{}
 	result := postgresDB.DB.Preload("Interiors").Preload("Exteriors").Preload("Images").Where("id = ?", apartmentID).Find(&Apartments)
@@ -210,12 +210,13 @@ func (postgresDB *PostgresDB) GetApartmentByID(apartmentID string) (*models.Apar
 }
 
 func (postgresDB *PostgresDB) CompareToken(userID string) (*models.User, error){
+
 	var user *models.User
 	err := postgresDB.DB.Where("id = ?", userID).First(&user).Error
 	return user, err
 }
 
-func (postgresDB *PostgresDB)SetUserToActive(userID string)  error{
+func (postgresDB *PostgresDB) SetUserToActive(userID string) error {
 	var user *models.User
 	err := postgresDB.DB.Model(&user).Where("id = ?", userID).Update("is_active", true).Error
 	return err

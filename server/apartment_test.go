@@ -42,24 +42,24 @@ func TestServer_DeleteApartment(t *testing.T) {
 	}
 	user := &models.User{Email: "adebayo@gmail.com"}
 	user.ID = "aefrfh123435waes"
-	mockDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(3)
-	mockDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(3)
+	mockDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(2)
+	mockDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(2)
 	t.Run("Test_Empty_ApartmentID", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment//", nil)
+		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/", nil)
 		if err != nil {
 			t.Fail()
 		}
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *accToken))
 		r.ServeHTTP(rw, req)
 
-		assert.Equal(t, http.StatusBadRequest, rw.Code)
-		assert.Contains(t, rw.Body.String(), "apartment id cannot be empty")
+		assert.Equal(t, http.StatusNotFound, rw.Code)
+		assert.Contains(t, rw.Body.String(), "404 page not found")
 	})
 	mockDB.EXPECT().DeleteApartment("12323shjbvbhj1t", user.ID).Return(errors.New("an error occurred"))
 	t.Run("Test_Error-Deleting_Apartment", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/12323shjbvbhj1t/", nil)
+		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/12323shjbvbhj1t", nil)
 		if err != nil {
 			t.Fail()
 		}
@@ -73,7 +73,7 @@ func TestServer_DeleteApartment(t *testing.T) {
 	mockDB.EXPECT().DeleteApartment("12323shjbvbhj1t", user.ID).Return(nil)
 	t.Run("Test_For_Successful_Delete", func(t *testing.T) {
 		rw := httptest.NewRecorder()
-		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/12323shjbvbhj1t/", nil)
+		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/12323shjbvbhj1t", nil)
 		if err != nil {
 			t.Fail()
 		}

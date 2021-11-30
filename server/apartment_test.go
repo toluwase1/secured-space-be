@@ -42,8 +42,8 @@ func TestServer_DeleteApartment(t *testing.T) {
 	}
 	user := &models.User{Email: "adebayo@gmail.com"}
 	user.ID = "aefrfh123435waes"
-	mockDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(2)
-	mockDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(2)
+	mockDB.EXPECT().TokenInBlacklist(gomock.Any()).Return(false).Times(3)
+	mockDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil).Times(3)
 	t.Run("Test_Empty_ApartmentID", func(t *testing.T) {
 		rw := httptest.NewRecorder()
 		req, err := http.NewRequest(http.MethodDelete, "/api/v1/user/apartment/", nil)

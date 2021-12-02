@@ -19,7 +19,8 @@ type DB interface {
 	FindAllUsersExcept(except string) ([]models.User, error)
 	CreateApartment(apartment *models.Apartment) error
 	DeleteApartment(ID, userID string) error
-	UpdateApartment(apartment *models.Apartment, apartmentID string) error
+	UpdateApartment(apartment map[string]interface{}, apartmentID string, interiors []map[string]interface{}, exteriors []map[string]interface{}) error
+	GetApartmentByID(apartmentID string) (*models.Apartment, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
@@ -27,13 +28,24 @@ type DB interface {
 	GetUsersApartments(userId string) ([]models.Apartment, error)
 	GetAllInteriorFeatures() ([]models.InteriorFeature, error)
 	GetAllExteriorFeatures() ([]models.ExteriorFeature, error)
-	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error)
 	GetAllCategory() ([]models.Category, error)
+	GetApartmentByCategory(categoryID string) []models.Apartment
+	GetAllCategories() []models.Category
+	UploadFileToS3(s *session.Session, file multipart.File, fileName string, size int64) (string, error)
 	ResetPassword(userID, NewPassword string) error
 	SearchApartment(categoryID, location, minPrice, maxPrice, noOfRooms string) ([]models.Apartment, error)
 	ApartmentDetails(apartmentID string) (*models.Apartment, error)
 	GetRoleByName(name string) (models.Role, error)
+	FindUserByID(userID string) (*models.User, error)
+	SetUserToActive(userID string) error
+	CompareToken(userID string) (*models.User, error)
+	PopulateTables()
 	UpdateUserImageURL(id, url string) error
+}
+type Mailer interface {
+	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)
+	SendVerifyAccount(userEmail, link string) (string, error)
+	SendResetPassword(userEmail, link string) (string, error)
 }
 
 // ValidationError defines error that occur due to validation

@@ -95,7 +95,8 @@ func Test_handleLogin(t *testing.T) {
 
 	t.Run("Test_FindUserByEmail", func(t *testing.T) {
 		hashedP, _ := services.GenerateHashPassword("password")
-		user := &models.User{Email: "jdoe@gmail.com", HashedPassword: string(hashedP)}
+		user := &models.User{Email: "jdoe@gmail.com", HashedPassword: string(hashedP),
+			IsActive: true}
 		mockedDB.EXPECT().FindUserByEmail(user.Email).Return(user, nil)
 		loginRequest := &struct {
 			Email    string `json:"email" binding:"required"`

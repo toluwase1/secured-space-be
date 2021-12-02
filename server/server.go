@@ -20,6 +20,7 @@ import (
 // Server serves requests to DB with router
 type Server struct {
 	DB     db.DB
+	Mail   db.Mailer
 	Router *router.Router
 }
 
@@ -34,6 +35,13 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
+	apirouter.POST("/new/user", s.registerNewUser())
+	apirouter.POST("/pusher/auth", s.pusherAuth())
+	apirouter.POST("/chat/create", s.CreateChat())
+	apirouter.POST("/pusher/message", s.SendNewMessage())
+	apirouter.GET("/apartment", s.GetAllApartments())
+	apirouter.POST("/verify-email/:userID/:userToken", s.VerifyEmail())
+	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
 	authorized.Use(middleware.Authorize(s.DB.FindUserByEmail, s.DB.TokenInBlacklist))
@@ -51,6 +59,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 	authorized.DELETE("/user/apartment/:apartmentID/removebookmark", s.RemoveBookmarkedApartment())
+	authorized.GET("/user/:apartmentID", s.handleGetApartmentByID())
 
 }
 
@@ -61,6 +70,7 @@ func (s *Server) setupRouter() *gin.Engine {
 		s.defineRoutes(r)
 		return r
 	}
+
 	r := gin.New()
 	// LoggerWithFormatter middleware will write the logs to gin.DefaultWriter
 	// By default gin.DefaultWriter = os.Stdout
@@ -118,6 +128,7 @@ func (s *Server) Start() {
 
 	log.Printf("Server started on %s\n", PORT)
 
+	s.DB.PopulateTables()
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)

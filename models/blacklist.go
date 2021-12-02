@@ -4,7 +4,7 @@ import "time"
 
 //Blacklist helps us blacklist tokens
 type Blacklist struct {
-	Email     string
-	Token     string
-	CreatedAt time.Time
+	Email     string    `json:"email"`
+	Token     string    `json:"token"`
+	CreatedAt time.Time `json:"created_at"`
 }

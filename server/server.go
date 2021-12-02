@@ -59,6 +59,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 	authorized.DELETE("/user/apartment/:apartmentID/removebookmark", s.RemoveBookmarkedApartment())
+	authorized.GET("/user/:apartmentID", s.handleGetApartmentByID())
 
 }
 

@@ -19,7 +19,8 @@ type DB interface {
 	FindAllUsersExcept(except string) ([]models.User, error)
 	CreateApartment(apartment *models.Apartment) error
 	DeleteApartment(ID, userID string) error
-	UpdateApartment(apartment *models.Apartment, apartmentID string) error
+	UpdateApartment(apartment map[string]interface{}, apartmentID string, interiors []map[string]interface{}, exteriors []map[string]interface{}) error
+	GetApartmentByID(apartmentID string) (*models.Apartment, error)
 	SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error
 	CheckApartmentInBookmarkApartment(userID, apartmentID string) bool
 	RemoveBookmarkedApartment(bookmarkApartment *models.BookmarkApartment) error
@@ -36,12 +37,9 @@ type DB interface {
 	ApartmentDetails(apartmentID string) (*models.Apartment, error)
 	GetRoleByName(name string) (models.Role, error)
 	FindUserByID(userID string) (*models.User, error)
-	SetUserToActive(userID string)  error
+	SetUserToActive(userID string) error
 	CompareToken(userID string) (*models.User, error)
 	PopulateTables()
-
-
-
 }
 type Mailer interface {
 	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)

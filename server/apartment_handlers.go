@@ -14,7 +14,9 @@ import (
 )
 
 func GetInteriors(interiorIDs []string) []models.InteriorFeature {
+	//in := []models.InteriorFeature{}
 	in := []models.InteriorFeature{}
+
 	for _, id := range interiorIDs {
 		in = append(in, models.InteriorFeature{
 			ID: id,
@@ -22,7 +24,30 @@ func GetInteriors(interiorIDs []string) []models.InteriorFeature {
 	}
 	return in
 }
+func GetInteriorss(interiorIDs []string, apartmentID string) []map[string]interface{} {
+	//in := []models.InteriorFeature{}
+	in := []map[string]interface{}{}
 
+	for _, id := range interiorIDs {
+		in = append(in, map[string]interface{}{
+			"apartment_id": apartmentID,
+			"interior_feature_id": id,
+		})
+	}
+	return in
+}
+func GetExteriorss(interiorIDs []string, apartmentID string) []map[string]interface{} {
+	//in := []models.InteriorFeature{}
+	ex := []map[string]interface{}{}
+
+	for _, id := range interiorIDs {
+		ex = append(ex, map[string]interface{}{
+			"apartment_id": apartmentID,
+			"exterior_feature_id": id,
+		})
+	}
+	return ex
+}
 func GetExteriors(exteriorIDs []string) []models.ExteriorFeature {
 	ex := []models.ExteriorFeature{}
 	for _, id := range exteriorIDs {
@@ -169,27 +194,146 @@ func (s *Server) DeleteApartment() gin.HandlerFunc {
 		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 	}
 }
+
 func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
+	// function to handle updating an apartment
 	return func(c *gin.Context) {
 		apartmentID := c.Param("apartmentID")
+		log.Println("here u are",apartmentID)
 		if apartmentID == "" {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{"apartment id cannot be empty"})
 			return
+
 		}
-		apartment := &models.Apartment{}
-		if errs := s.decode(c, apartment); errs != nil {
-			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+
+		form, err := c.MultipartForm()
+
+		log.Println("am here")
+
+		//if err != nil {
+		//	log.Printf("error parsing multipart form: %v", err)
+		//	response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+		//	return
+		//}
+		log.Println("got here")
+		formImages := form.File["images"]
+		images := []models.Images{}
+
+		price, err := strconv.Atoi(c.PostForm("price"))
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
 			return
 		}
 
-		if err := s.DB.UpdateApartment(apartment, apartmentID); err != nil {
-			log.Printf("update apartment error : %v\n", err)
+		numOfRooms, err := strconv.Atoi(c.PostForm("no_of_rooms"))
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+
+		furnished, err := strconv.ParseBool(c.PostForm("furnished"))
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+
+		aStatus, err := strconv.ParseBool(c.PostForm("apartment_status"))
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+
+		exteriors := strings.Split(c.PostFormArray("exterior")[0], ",")
+		interiors := strings.Split(c.PostFormArray("interior")[0], ",")
+
+		//upload the images to aws.
+		for _, f := range formImages {
+			file, err := f.Open()
+			if err != nil {
+
+			}
+			fileExtension, ok := services.CheckSupportedFile(strings.ToLower(f.Filename))
+			log.Printf(filepath.Ext(strings.ToLower(f.Filename)))
+			fmt.Println(fileExtension)
+			if ok {
+				log.Println(fileExtension)
+				response.JSON(c, "", http.StatusBadRequest, nil, []string{fileExtension + " image file type is not supported"})
+				return
+			}
+
+			session, tempFileName, err := services.PreAWS(fileExtension, "apartment")
+			if err != nil {
+				log.Println("could not upload file", err)
+			}
+
+			// upload the image to aws.
+			url, err := s.DB.UploadFileToS3(session, file, tempFileName, f.Size)
+			if err != nil {
+				log.Println(err)
+				response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
+				return
+			}
+
+			//_ = uploadFileToS3(nil, image, "name", 12)
+			log.Printf("filename: %v", f.Filename)
+
+			img := models.Images{
+				URL: url,
+			}
+			images = append(images, img)
+		}
+
+		apartment := map[string]interface{}{
+			"Title":           c.PostForm("title"),
+			"CategoryID":      c.PostForm("category_id"),
+			"Description":     c.PostForm("description"),
+			"Price":           price,
+			"ID": 			   apartmentID,
+			"NoOfRooms":       numOfRooms,
+			"Furnished":       furnished,
+			"Location":        c.PostForm("location"),
+			"ApartmentStatus": models.ApartmentStatus(aStatus),
+			//Interiors:       GetInteriors(interiors),
+			//Exteriors:       GetExteriors(exteriors),
+			"Images":          images,
+		}
+		interiorss := GetInteriorss(interiors, apartmentID)
+		exteriorss := GetExteriorss(exteriors, apartmentID)
+		log.Println("here i am", apartment)
+		err = s.DB.UpdateApartment(apartment, apartmentID, interiorss, exteriorss)
+		if err != nil {
+			response.JSON(c, "", http.StatusBadRequest, nil, []string{err.Error()})
+			return
+		}
+		log.Printf("Furnished: %T, Status: %T; furnished: %v, status: %v", furnished, aStatus, furnished, aStatus)
+		log.Println("here i am now", apartment)
+		response.JSON(c, "Apartment updated successfully", http.StatusOK, apartment, nil)
+		log.Println("see me", apartment)
+	}
+
+}
+
+func (s *Server) handleGetApartmentByID() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		apartmentID := c.Param("apartmentID")
+		log.Printf("apartment id: %v", apartmentID)
+		apartment, errs := s.DB.GetApartmentByID(apartmentID)
+		if errs != nil {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		response.JSON(c, "apartment updated successfully", http.StatusOK, nil, nil)
+		response.JSON(c, "Apartment retrieved successfully", http.StatusOK, apartment, nil)
 		return
 	}
+
+	//	if err := s.DB.UpdateApartment(apartment, apartmentID); err != nil {
+	//		log.Printf("update apartment error : %v\n", err)
+	//		response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
+	//		return
+	//	}
+	//	response.JSON(c, "apartment updated successfully", http.StatusOK, nil, nil)
+	//	return
+	//}
 }
 
 func (s *Server) GetApartmentDetails() gin.HandlerFunc {

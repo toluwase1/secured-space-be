@@ -15,7 +15,6 @@ import (
 	"time"
 )
 
-
 func (s *Server) handleSignupTenant() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, err := s.DB.GetRoleByName("tenant")
@@ -30,7 +29,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		}
 
 		// Generates access claims and refresh claims
-		accessClaims,_ := services.GenerateClaims(user.Email)
+		accessClaims, _ := services.GenerateClaims(user.Email)
 		secret := os.Getenv("JWT_SECRET")
 		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 		if err != nil {
@@ -72,10 +71,11 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
 		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
 		if err != nil{
+
 			log.Printf("Error: %v", err.Error())
-			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"Email could not be sent"})
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Email could not be sent"})
 		}
-		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
+		response.JSON(c, "email sent successfully", http.StatusCreated, nil, nil)
 	}
 }
 
@@ -93,7 +93,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 
 		// Generates access claims and refresh claims
-		accessClaims,_ := services.GenerateClaims(user.Email)
+		accessClaims, _ := services.GenerateClaims(user.Email)
 		secret := os.Getenv("JWT_SECRET")
 		accToken, err := services.GenerateToken(jwt.SigningMethodHS256, accessClaims, &secret)
 		if err != nil {
@@ -117,7 +117,7 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		}
 		_, err = s.DB.FindUserByEmail(user.Email)
 		if err == nil {
-			response.JSON(c, "", http.StatusNotFound, nil, []string{ "user email already exists" })
+			response.JSON(c, "", http.StatusNotFound, nil, []string{"user email already exists"})
 			return
 		}
 		_, err = s.DB.CreateUser(user)
@@ -134,9 +134,9 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
 		if err != nil{
 			log.Printf("Error: %v", err.Error())
-			response.JSON(c,"",http.StatusInternalServerError,nil,[]string{"email could not be sent"})
+			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"email could not be sent"})
 		}
-		response.JSON(c,"email sent successfully",http.StatusCreated,nil,nil)
+		response.JSON(c, "email sent successfully", http.StatusCreated, nil, nil)
 	}
 }
 
@@ -164,7 +164,7 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 			return
 		}
 
-		if user.IsActive == false{
+		if user.IsActive == false {
 			log.Printf("No user: %v\n", err)
 			response.JSON(c, "", http.StatusUnauthorized, nil, []string{"email not verified"})
 			return

@@ -35,9 +35,12 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	apirouter.POST("/reset-password/:userID", s.ResetPassword())
 	apirouter.GET("/search-apartment", s.SearchApartment())
 	apirouter.GET("/apartment-details/:apartmentID", s.GetApartmentDetails())
-
+	apirouter.POST("/new/user", s.registerNewUser())
+	apirouter.POST("/pusher/auth", s.pusherAuth())
+	apirouter.POST("/chat/create", s.CreateChat())
+	apirouter.POST("/pusher/message", s.SendNewMessage())
 	apirouter.GET("/apartment", s.GetAllApartments())
-	apirouter.POST("/verify-email/:userID/:userToken",s.VerifyEmail())
+	apirouter.POST("/verify-email/:userID/:userToken", s.VerifyEmail())
 	apirouter.POST("/forgot-password", s.ForgotPassword())
 
 	authorized := apirouter.Group("/")
@@ -56,6 +59,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 	authorized.DELETE("/user/apartment/:apartmentID/removebookmark", s.RemoveBookmarkedApartment())
+	authorized.GET("/user/:apartmentID", s.handleGetApartmentByID())
 
 }
 
@@ -113,7 +117,6 @@ func (s *Server) Start() {
 		Addr:    PORT,
 		Handler: r,
 	}
-
 
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below

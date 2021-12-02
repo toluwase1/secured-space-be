@@ -40,7 +40,7 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 		}
 
 		user.Token = *accToken
-		fmt.Println(*accToken)
+
 
 		if errs := s.decode(c, user); errs != nil {
 			response.JSON(c, "Cannot decode user signup request", http.StatusBadRequest, nil, errs)

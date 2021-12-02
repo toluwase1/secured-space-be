@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/brianvoe/gofakeit/v6"
+	_ "github.com/brianvoe/gofakeit/v6"
 	"github.com/decadevs/rentals-api/models"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
@@ -66,7 +66,7 @@ func (postgresDB *PostgresDB) PopulateTables() {
 	}
 
 	rol := models.Role{}
-	postgresDB.DB.Last(&rol)
+	postgresDB.DB.Where("title = ?", "tenant").Find(&rol)
 
 	user := &models.User{
 		FirstName:            "John",
@@ -126,59 +126,59 @@ func (postgresDB *PostgresDB) PopulateTables() {
 		postgresDB.DB.Create(&exteriorFeatures)
 	}
 
-	users := models.User{}
-	postgresDB.DB.First(&users)
+	//users := models.User{}
+	//postgresDB.DB.First(&users)
 
-	category := models.Category{}
-	postgresDB.DB.Where("name = ?", "duplex").Find(&category)
-	cate := models.Category{}
-	postgresDB.DB.Where("name = ?", "bungalow").Find(&cate)
+	//category := models.Category{}
+	//postgresDB.DB.Where("name = ?", "duplex").Find(&category)
+	//cate := models.Category{}
+	//postgresDB.DB.Where("name = ?", "bungalow").Find(&cate)
 
-	infeature := []models.InteriorFeature{}
-	postgresDB.DB.Limit(5).Find(&infeature)
-	exfeature := []models.ExteriorFeature{}
-	postgresDB.DB.Limit(5).Find(&exfeature)
+	//infeature := []models.InteriorFeature{}
+	//postgresDB.DB.Limit(5).Find(&infeature)
+	//exfeature := []models.ExteriorFeature{}
+	//postgresDB.DB.Limit(5).Find(&exfeature)
 
-	var apartments []models.Apartment
+	//var apartments []models.Apartment
 
-	for i := 0; i < 10; i++ {
-		apartment := &models.Apartment{
-			UserID:          users.ID,
-			Title:           gofakeit.Sentence(10),
-			CategoryID:      category.ID,
-			Description:     gofakeit.LoremIpsumSentence(20),
-			Price:           gofakeit.Number(1000, 2000),
-			NoOfRooms:       gofakeit.Number(1, 20),
-			Furnished:       gofakeit.Bool(),
-			Location:        gofakeit.City(),
-			Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
-			ApartmentStatus: true,
-			Interiors:       infeature,
-			Exteriors:       exfeature,
-		}
-		apartments = append(apartments, *apartment)
-	}
-	for i := 0; i < 10; i++ {
-		apartment := &models.Apartment{
-			UserID:          users.ID,
-			Title:           gofakeit.Sentence(10),
-			CategoryID:      cate.ID,
-			Description:     gofakeit.LoremIpsumSentence(20),
-			Price:           gofakeit.Number(1000, 2000),
-			NoOfRooms:       gofakeit.Number(1, 20),
-			Furnished:       gofakeit.Bool(),
-			Location:        gofakeit.City(),
-			Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
-			ApartmentStatus: true,
-			Interiors:       infeature,
-			Exteriors:       exfeature,
-		}
-		apartments = append(apartments, *apartment)
-	}
-	result = postgresDB.DB.Find(&models.Apartment{})
-	if result.RowsAffected < 1 {
-		postgresDB.DB.Create(&apartments)
-	}
+	//for i := 0; i < 10; i++ {
+	//	apartment := &models.Apartment{
+	//		UserID:          users.ID,
+	//		Title:           gofakeit.Sentence(4),
+	//		CategoryID:      category.ID,
+	//		Description:     gofakeit.LoremIpsumSentence(20),
+	//		Price:           gofakeit.Number(1000, 2000),
+	//		NoOfRooms:       gofakeit.Number(1, 20),
+	//		Furnished:       gofakeit.Bool(),
+	//		Location:        gofakeit.City(),
+	//		Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
+	//		ApartmentStatus: true,
+	//		Interiors:       infeature,
+	//		Exteriors:       exfeature,
+	//	}
+	//	apartments = append(apartments, *apartment)
+	//}
+	//for i := 0; i < 10; i++ {
+	//	apartment := &models.Apartment{
+	//		UserID:          users.ID,
+	//		Title:           gofakeit.Sentence(10),
+	//		CategoryID:      cate.ID,
+	//		Description:     gofakeit.LoremIpsumSentence(20),
+	//		Price:           gofakeit.Number(1000, 2000),
+	//		NoOfRooms:       gofakeit.Number(1, 20),
+	//		Furnished:       gofakeit.Bool(),
+	//		Location:        gofakeit.City(),
+	//		Images:          []models.Images{{URL: "https://source.unsplash.com/random"}},
+	//		ApartmentStatus: true,
+	//		Interiors:       infeature,
+	//		Exteriors:       exfeature,
+	//	}
+	//	apartments = append(apartments, *apartment)
+	//}
+	//result = postgresDB.DB.Find(&models.Apartment{})
+	//if result.RowsAffected < 1 {
+	//	postgresDB.DB.Create(&apartments)
+	//}
 }
 
 func (postgresDB *PostgresDB) CreateUser(user *models.User) (*models.User, error) {
@@ -265,7 +265,10 @@ func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error
 }
 
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
-	result := postgresDB.DB.Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
+	result :=postgresDB.DB.Table("apartment_interiors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result =postgresDB.DB.Table("apartment_exteriors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result =postgresDB.DB.Table("images").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result = postgresDB.DB.Preload("Images").Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
 }
 func (postgresDB *PostgresDB) SaveBookmarkApartment(bookmarkApartment *models.BookmarkApartment) error {

@@ -400,6 +400,17 @@ func (postgresDB *PostgresDB) GetRoleByName(name string) (models.Role, error) {
 	err := postgresDB.DB.Where("title = ?", name).First(&role).Error
 	return role, err
 }
+func (postgresDB *PostgresDB) UpdateUserImageURL(id, url string) error {
+	result :=
+		postgresDB.DB.Model(models.User{}).
+			Where("id = ?", id).
+			Updates(
+				models.User{
+					Image: url,
+				},
+			)
+	return result.Error
+}
 
 func (PostgresDB *PostgresDB) GetApartmentByCategory(categoryID string) []models.Apartment {
 	var apartments []models.Apartment

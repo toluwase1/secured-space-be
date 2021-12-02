@@ -30,7 +30,7 @@ func GetInteriorss(interiorIDs []string, apartmentID string) []map[string]interf
 
 	for _, id := range interiorIDs {
 		in = append(in, map[string]interface{}{
-			"apartment_id": apartmentID,
+			"apartment_id":        apartmentID,
 			"interior_feature_id": id,
 		})
 	}
@@ -42,7 +42,7 @@ func GetExteriorss(interiorIDs []string, apartmentID string) []map[string]interf
 
 	for _, id := range interiorIDs {
 		ex = append(ex, map[string]interface{}{
-			"apartment_id": apartmentID,
+			"apartment_id":        apartmentID,
 			"exterior_feature_id": id,
 		})
 	}
@@ -108,7 +108,6 @@ func (s *Server) handleCreateApartment() gin.HandlerFunc {
 				return
 			}
 
-			//_ = uploadFileToS3(nil, image, "name", 12)
 			log.Printf("filename: %v", f.Filename)
 
 			img := models.Images{
@@ -199,7 +198,7 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 	// function to handle updating an apartment
 	return func(c *gin.Context) {
 		apartmentID := c.Param("apartmentID")
-		log.Println("here u are",apartmentID)
+		log.Println("here u are", apartmentID)
 		if apartmentID == "" {
 			response.JSON(c, "", http.StatusBadRequest, nil, []string{"apartment id cannot be empty"})
 			return
@@ -288,14 +287,14 @@ func (s *Server) handleUpdateApartmentDetails() gin.HandlerFunc {
 			"CategoryID":      c.PostForm("category_id"),
 			"Description":     c.PostForm("description"),
 			"Price":           price,
-			"ID": 			   apartmentID,
+			"ID":              apartmentID,
 			"NoOfRooms":       numOfRooms,
 			"Furnished":       furnished,
 			"Location":        c.PostForm("location"),
 			"ApartmentStatus": models.ApartmentStatus(aStatus),
 			//Interiors:       GetInteriors(interiors),
 			//Exteriors:       GetExteriors(exteriors),
-			"Images":          images,
+			"Images": images,
 		}
 		interiorss := GetInteriorss(interiors, apartmentID)
 		exteriorss := GetExteriorss(exteriors, apartmentID)

@@ -266,9 +266,9 @@ func (postgresDB *PostgresDB) CreateApartment(apartment *models.Apartment) error
 }
 
 func (postgresDB *PostgresDB) DeleteApartment(ID, userID string) error {
-	result :=postgresDB.DB.Table("apartment_interiors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
-	result =postgresDB.DB.Table("apartment_exteriors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
-	result =postgresDB.DB.Table("images").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result := postgresDB.DB.Table("apartment_interiors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result = postgresDB.DB.Table("apartment_exteriors").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
+	result = postgresDB.DB.Table("images").Where("apartment_id = ?", ID).Delete(&models.Apartment{})
 	result = postgresDB.DB.Preload("Images").Where("id = ? AND user_id = ?", ID, userID).Delete(&models.Apartment{})
 	return result.Error
 }

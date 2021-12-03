@@ -69,8 +69,8 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			return
 		}
 		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
-		if err != nil{
+		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s", user.ID, *accToken))
+		if err != nil {
 
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Email could not be sent"})
@@ -131,8 +131,8 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			return
 		}
 		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
-		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
-		if err != nil{
+		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s", user.ID, *accToken))
+		if err != nil {
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"email could not be sent"})
 		}

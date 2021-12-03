@@ -15,10 +15,9 @@ type User struct {
 	BookmarkedApartments []Apartment `gorm:"many2many:bookmarked_apartments" json:"bookmarked_apartments,omitempty"`
 	Image                string      `json:"image,omitempty"`
 	RoleID               string      `json:"role_id"`
-
-	Role     Role   `json:"role"`
-	IsActive bool   `json:"is_active" gorm:"default:false"`
-	Token    string `json:"-,omitempty"`
+	Role                 Role        `json:"role"`
+	IsActive             bool        `json:"is_active" gorm:"default:false"`
+	Token                string      `json:"-,omitempty"`
 }
 type Images struct {
 	Models

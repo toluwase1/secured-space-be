@@ -176,7 +176,7 @@ func (s *Server) DeleteApartment() gin.HandlerFunc {
 			if user, ok := userI.(*models.User); ok {
 				apartmentID := c.Param("apartmentID")
 				if apartmentID == "" {
-					response.JSON(c, "", http.StatusBadRequest, nil, []string{"apartment id cannot be empty"})
+					response.JSON(c, "", http.StatusNotFound, nil, []string{"404 page not found"})
 					return
 				}
 				err := s.DB.DeleteApartment(apartmentID, user.ID)

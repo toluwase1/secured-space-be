@@ -55,7 +55,7 @@ func (s *Server) defineRoutes(router *gin.Engine) {
 	authorized.POST("/user/change-password", s.ChangePassword())
 	// apartment routes
 	authorized.POST("/user/apartments", s.handleCreateApartment())
-	authorized.DELETE("/user/apartment/:apartmentID/", s.DeleteApartment())
+	authorized.DELETE("/user/apartment/:apartmentID", s.DeleteApartment())
 	authorized.PUT("/user/:apartmentID/update", s.handleUpdateApartmentDetails())
 	authorized.GET("/user/:apartmentID/bookmark", s.SaveBookmarkApartment())
 	authorized.DELETE("/user/apartment/:apartmentID/removebookmark", s.RemoveBookmarkedApartment())

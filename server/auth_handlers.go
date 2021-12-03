@@ -68,10 +68,10 @@ func (s *Server) handleSignupTenant() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
-		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("http://localhost:3000/verify-email/%s/%s", user.ID, *accToken))
-		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
-		if err != nil {
+		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
+		if err != nil{
+
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"Email could not be sent"})
 		}
@@ -130,11 +130,9 @@ func (s *Server) handleSignupAgent() gin.HandlerFunc {
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"internal server error"})
 			return
 		}
-		response.JSON(c, "signup successful", http.StatusCreated, nil, nil)
-
-		_, err = s.Mail.SendVerifyAccount(user.Email, fmt.Sprintf("http://localhost:3000/verify-email/%s/%s", user.ID, *accToken))
-		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://securespace-ng.herokuapp.com/api/v1/verify-email/%s/%s",user.ID,*accToken))
-		if err != nil {
+		//_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("http://localhost:3000/verify-email/%s/%s",user.ID,*accToken))
+		_, err = s.Mail.SendVerifyAccount(user.Email,fmt.Sprintf("https://rentals-frontend-gold.vercel.app/verify-email/%s/%s",user.ID,*accToken))
+		if err != nil{
 			log.Printf("Error: %v", err.Error())
 			response.JSON(c, "", http.StatusInternalServerError, nil, []string{"email could not be sent"})
 		}
@@ -152,10 +150,12 @@ func (s *Server) handleLogin() gin.HandlerFunc {
 
 		if errs := s.decode(c, loginRequest); errs != nil {
 			response.JSON(c, "", http.StatusBadRequest, nil, errs)
+			fmt.Println("here")
 			return
 		}
 		// Check if the user with that email exists
 		user, err := s.DB.FindUserByEmail(loginRequest.Email)
+
 		if err != nil {
 			if inactiveErr, ok := err.(servererrors.InActiveUserError); ok {
 				response.JSON(c, "", http.StatusBadRequest, nil, []string{inactiveErr.Error()})

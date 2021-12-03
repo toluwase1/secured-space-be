@@ -40,6 +40,7 @@ type DB interface {
 	SetUserToActive(userID string) error
 	CompareToken(userID string) (*models.User, error)
 	PopulateTables()
+	UpdateUserImageURL(id, url string) error
 }
 type Mailer interface {
 	SendSimpleMessage(UserEmail, EmailSubject, EmailBody string) (string, error)

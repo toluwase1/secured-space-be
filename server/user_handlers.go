@@ -115,7 +115,9 @@ func (s *Server) handleGetUserByUsername() gin.HandlerFunc {
 // handleUploadProfilePic uploads a user's profile picture
 func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log.Println("passed here")
 		if userI, exists := c.Get("user"); exists {
+
 			if user, ok := userI.(*models.User); ok {
 
 				const maxSize = int64(2048000) // allow only 2MB of file size
@@ -161,7 +163,12 @@ func (s *Server) handleUploadProfilePic() gin.HandlerFunc {
 				}
 
 				user.Image = url
-
+				err = s.DB.UpdateUserImageURL(user.ID, user.Image)
+				if err != nil {
+					log.Println(err)
+					response.JSON(c, "", http.StatusInternalServerError, nil, []string{"an error occured while uploading the image"})
+					return
+				}
 				response.JSON(c, "successfully created file", http.StatusOK, gin.H{
 					"imageurl": user.Image,
 				}, nil)
